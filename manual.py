@@ -10,14 +10,17 @@ def check_col(puzzle, box):
 def check_box(puzzle, box):
     pass
 
-def manually_solve(puzzle):
+def easy_adds(puzzle):
     n = len(puzzle)
+    added_on = False
     for i in range(n):
         for j in range(n):
             box = [i,j]
             if puzzle[i][j] != 0:
-                pass
-                # violations = check_row(puzzle, box) 
+                violations = []
+
+def manually_solve(puzzle):
+    pass 
 
 if __name__ == '__main__':
     pass
