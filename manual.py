@@ -1,5 +1,6 @@
 # human solution
-# begin by combing through grid and seeing if there are any actual possibilities
+# techniques taken from: https://www.kristanix.com/sudokuepic/sudoku-solving-techniques.php
+
 import numpy as np
 import math
 
@@ -20,28 +21,46 @@ def check_box(puzzle, box):
             elements.append(elem)
     return elements
 
-def easy_adds(puzzle):
+def sole_candidate(puzzle, box):
     n = len(puzzle)
-    added_on = False
-    for i in range(n):
-        for j in range(n):
-            box = [i,j]
-            if puzzle[i][j] == 0:
-                violations = []
-                violations.extend(check_row(puzzle, box))
-                violations.extend(check_col(puzzle, box))
-                violations.extend(check_box(puzzle, box))
-                possibilities = list(set(range(1, n+1)).difference(set(violations)))
-                if len(possibilities) == 1:
-                    puzzle[i][j] = possibilities[0]
-                    added_on = True
-    return puzzle, added_on
+    violations = []
+    violations.extend(check_row(puzzle, box))
+    violations.extend(check_col(puzzle, box))
+    violations.extend(check_box(puzzle, box))
+    possibilities = list(set(range(1, n+1)).difference(set(violations)))
+    if len(possibilities) == 1:
+        puzzle[box[0]][box[1]] = possibilities[0]
+    return puzzle
+
+def unique_candidate(puzzle):
+    n = len(puzzle)    
+    for digit in range(n):
+        row_count = [i for i in range(n) if digit not in check_row(puzzle, [i,0])]
+        col_count = [j for j in range(n) if digit not in check_col(puzzle, [0,j])]
+        if len(row_count) == 1 and len(col_count) == 1:
+            puzzle[row_count[0]][col_count[0]] = digit
+    return puzzle
 
 def manually_solve(puzzle):
+    n = len(puzzle)
     added_on = True
     count = 0
     while added_on:
-        puzzle, added_on = easy_adds(puzzle) 
+        orig_puzzle = np.copy(puzzle)
+
+        # methods for a single box
+        for i in range(n):
+            for j in range(n):
+                box = [i,j]                
+                if puzzle[i][j] == 0:
+                    puzzle = sole_candidate(puzzle, box) 
+                
+        # methods that use the whole grid
+        puzzle = unique_candidate(puzzle)
+        
+        # final check to see if the methods changed added on a digit
+        if np.array_equal(orig_puzzle, puzzle):
+            added_on = False
         count += 1
         print(count)
     return puzzle
@@ -67,3 +86,15 @@ if __name__ == '__main__':
                          [0,0,0,4,0,0,6,1,0]])
     our_solution = manually_solve(ny_times_puzzle)
     print(np.array_equal(our_solution,ny_times_correct))
+
+    #sammy's puzzle
+    puzzle = np.array([[0,3,1,5,0,9,0,0,8],
+                       [0,0,0,0,0,1,0,0,7],
+                       [0,0,0,6,2,0,0,5,0],
+                       [1,0,7,0,0,0,0,9,4],
+                       [0,0,2,9,0,7,6,0,0],
+                       [3,6,0,0,0,0,7,0,1],
+                       [0,9,0,0,5,6,0,0,0],
+                       [0,0,0,7,0,0,0,0,0],
+                       [2,0,0,1,0,4,5,7,0]])
+    print(manually_solve(puzzle))
