@@ -34,11 +34,15 @@ def sole_candidate(puzzle, box):
 
 def unique_candidate(puzzle):
     n = len(puzzle)    
-    for digit in range(n):
-        row_count = [i for i in range(n) if digit not in check_row(puzzle, [i,0])]
-        col_count = [j for j in range(n) if digit not in check_col(puzzle, [0,j])]
-        if len(row_count) == 1 and len(col_count) == 1:
-            puzzle[row_count[0]][col_count[0]] = digit
+    box_size = int(math.sqrt(n))
+    for i in range(box_size):
+        for j in range(box_size):
+            for digit in range(1,n+1):
+                row_count = [i for i in range(i*box_size, (i+1)*box_size) if digit not in check_row(puzzle, [i,0])]
+                col_count = [j for j in range(j*box_size, (j+1)*box_size) if digit not in check_col(puzzle, [0,j])]
+                # print(i, j, row_count, col_count)
+                if len(row_count) == 1 and len(col_count) == 1 and digit not in check_box(puzzle, [i*box_size,j*box_size]):
+                    puzzle[row_count[0]][col_count[0]] = digit                   
     return puzzle
 
 def manually_solve(puzzle):
@@ -47,54 +51,53 @@ def manually_solve(puzzle):
     count = 0
     while added_on:
         orig_puzzle = np.copy(puzzle)
-
         # methods for a single box
         for i in range(n):
             for j in range(n):
                 box = [i,j]                
                 if puzzle[i][j] == 0:
                     puzzle = sole_candidate(puzzle, box) 
-                
+        # print("Round {}, sole done: {}".format(count, puzzle))
         # methods that use the whole grid
         puzzle = unique_candidate(puzzle)
-        
+        # print("Round {}, unique done: {}".format(count, puzzle))
         # final check to see if the methods changed added on a digit
         if np.array_equal(orig_puzzle, puzzle):
             added_on = False
         count += 1
-        print(count)
+        # print(count)
     return puzzle
 
 if __name__ == '__main__':
-    ny_times_correct = np.array([[2,3,4,9,5,6,7,8,1],
-                         [8,6,5,2,1,7,4,3,9],
-                         [7,1,9,8,3,4,5,6,2],
-                         [3,2,8,7,9,5,1,4,6],
-                         [1,4,7,3,6,8,9,2,5],
-                         [9,5,6,1,4,2,8,7,3],
-                         [4,8,1,6,2,9,3,5,7],
-                         [6,7,3,5,8,1,2,9,4],
-                         [5,9,2,4,7,3,6,1,8]])
-    ny_times_puzzle = np.array([[0,3,4,9,5,6,0,8,0],
-                         [8,6,5,0,0,7,0,3,9],
-                         [0,0,9,0,3,0,0,0,2],
-                         [3,0,0,7,0,5,1,4,0],
-                         [1,0,0,3,0,8,0,0,5],
-                         [9,0,6,1,0,0,0,0,0],
-                         [0,8,0,0,2,9,0,0,7],
-                         [6,7,0,0,0,0,2,9,0],
-                         [0,0,0,4,0,0,6,1,0]])
-    our_solution = manually_solve(ny_times_puzzle)
-    print(np.array_equal(our_solution,ny_times_correct))
+    # ny_times_correct = np.array([[2,3,4,9,5,6,7,8,1],
+    #                      [8,6,5,2,1,7,4,3,9],
+    #                      [7,1,9,8,3,4,5,6,2],
+    #                      [3,2,8,7,9,5,1,4,6],
+    #                      [1,4,7,3,6,8,9,2,5],
+    #                      [9,5,6,1,4,2,8,7,3],
+    #                      [4,8,1,6,2,9,3,5,7],
+    #                      [6,7,3,5,8,1,2,9,4],
+    #                      [5,9,2,4,7,3,6,1,8]])
+    # ny_times_puzzle = np.array([[0,3,4,9,5,6,0,8,0],
+    #                      [8,6,5,0,0,7,0,3,9],
+    #                      [0,0,9,0,3,0,0,0,2],
+    #                      [3,0,0,7,0,5,1,4,0],
+    #                      [1,0,0,3,0,8,0,0,5],
+    #                      [9,0,6,1,0,0,0,0,0],
+    #                      [0,8,0,0,2,9,0,0,7],
+    #                      [6,7,0,0,0,0,2,9,0],
+    #                      [0,0,0,4,0,0,6,1,0]])
+    # our_solution = manually_solve(ny_times_puzzle)
+    # print(np.array_equal(our_solution,ny_times_correct))
 
     #sammy's puzzle
-    puzzle = np.array([[0,3,1,5,0,9,0,0,8],
-                       [0,0,0,0,0,1,0,0,7],
-                       [0,0,0,6,2,0,0,5,0],
-                       [1,0,7,0,0,0,0,9,4],
-                       [0,0,2,9,0,7,6,0,0],
-                       [3,6,0,0,0,0,7,0,1],
-                       [0,9,0,0,5,6,0,0,0],
-                       [0,0,0,7,0,0,0,0,0],
-                       [2,0,0,1,0,4,5,7,0]])
+    puzzle = np.array([[0,0,0,6,0,3,0,0,7],
+                       [3,0,0,0,0,2,9,0,0],
+                       [6,0,0,1,7,0,0,0,0],
+                       [4,0,2,0,9,0,0,1,6],
+                       [0,0,7,0,0,0,4,0,0],
+                       [9,6,0,0,1,0,2,0,5],
+                       [0,0,0,0,2,1,0,0,4],
+                       [0,0,4,9,0,0,0,0,1],
+                       [8,0,0,5,0,6,0,0,0]])
     print(manually_solve(puzzle))
