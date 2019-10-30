@@ -1,5 +1,15 @@
 #!/usr/bin/env python
-# dancing links solution
+# algorithm x solution
+# if matrix A has no columns, current partial solution is valid solution. terminate.
+# else: choose a column c (deterministiaclly)
+# choose a row r such that A(r,c)=1 (nondeterministically)
+# include row r in the partial solution
+# for each column j such that A(r,j)=1
+    # for each row i such that A(i,j)=1
+        #delete row i from matrix A
+    # delete column j from matrix A
+# repeat alg recrusively on reduced matrix A
+
 import numpy as np
 import math
 

@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 # human solution
 # begin by combing through grid and seeing if there are any actual possibilities
 import numpy as np
@@ -41,7 +42,7 @@ def manually_solve(puzzle):
     added_on = True
     count = 0
     while added_on:
-        puzzle, added_on = easy_adds(puzzle) 
+        puzzle, added_on = easy_adds(puzzle)
         count += 1
         print(count)
     return puzzle
