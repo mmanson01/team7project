@@ -3,36 +3,25 @@
 import numpy as np
 import math
 
-def solve(X, Y, solution=[]):
-    if not X:
-        yield list(solution)
-    else:
-        c = min(X, key=lambda c: len(X[c]))
-        for r in list(X[c]):
-            solution.append(r)
-            cols = select(X, Y, r)
-            for s in solve(X, Y, solution):
-                yield s
-            deselect(X, Y, r, cols)
-            solution.pop()
+# each column special node for "column header"...included in column list
+# ^ special row ("control row") that has all columns still exist in matrix
+# column header can track # of nodes in its column to easily get column w lowest # of nondeterministically
 
-def select(X, Y, r):
-    cols = []
-    for j in Y[r]:
-        for i in X[j]:
-            for k in Y[i]:
-                if k != j:
-                    X[k].remove(i)
-        cols.append(X.pop(j))
-    return cols
+# eliminate by selecting a column and a row in that column
+# if column doesnt have any rows, current matrix unsolvable..must be backtracked
+# elimination: all columns that have a 1 in the selected row are removed
+    # and all rows (including selected row) that contain a 1 in any of the removed columns
 
-def deselect(X, Y, r, cols):
-    for j in reversed(Y[r]):
-        X[j] = cols.pop()
-        for i in X[j]:
-            for k in Y[i]:
-                if k != j:
-                    X[k].add(i)
+# how to remove single column:
+    # 1) remove column's header
+    # 2) for each row where selected column has a 1, traverese row + remove it from columns
+    # 3) repeat for each column where selected row contains a 1
+# if matrix has no columns, then they have all been filled and selected rows form the solution
+def get_matrix(ny_times_puzzle, universe):
+    matrix = []
+
+
+    return matrix
 
 if __name__ == '__main__':
     ny_times_correct = np.array([[2,3,4,9,5,6,7,8,1],
@@ -53,5 +42,7 @@ if __name__ == '__main__':
                          [0,8,0,0,2,9,0,0,7],
                          [6,7,0,0,0,0,2,9,0],
                          [0,0,0,4,0,0,6,1,0]])
+    universe = [1,2,3,4,5,6,7,8,9]
+    ny_times_matrix = get_matrix(ny_times_puzzle, universe)
     our_solution = solve(ny_times_puzzle)
     print(np.array_equal(our_solution,ny_times_correct))

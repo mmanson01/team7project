@@ -12,37 +12,39 @@
 
 import numpy as np
 import math
+board_size = 9
 
-def solve(X, Y, solution=[]):
-    if not X:
-        yield list(solution)
-    else:
-        c = min(X, key=lambda c: len(X[c]))
-        for r in list(X[c]):
-            solution.append(r)
-            cols = select(X, Y, r)
-            for s in solve(X, Y, solution):
-                yield s
-            deselect(X, Y, r, cols)
-            solution.pop()
+# constraints:
+# 1) values 1-9 have to be in every row, column, box
+# 2) number can't repeat in row, column, or box
+# 3) every cell has to have a value
+# total of 324 contsratings (81*4) == columns
+# 729 rows in matrix (9^3)
 
-def select(X, Y, r):
-    cols = []
-    for j in Y[r]:
-        for i in X[j]:
-            for k in Y[i]:
-                if k != j:
-                    X[k].remove(i)
-        cols.append(X.pop(j))
-    return cols
+def base_sudoku_grid(){
+    matrix = []
+    # set matrix size to be [size^3][size^2 * 4]
+    # size^3 to represent all of the boxes, columns, and rows
+    # size^2 * 4 to represent size of board and the four constraints
 
-def deselect(X, Y, r, cols):
-    for j in reversed(Y[r]):
-        X[j] = cols.pop()
-        for i in X[j]:
-            for k in Y[i]:
-                if k != j:
-                    X[k].add(i)
+    # initialize matrix
+    for row in range(board_size**3):
+        temp_array = []
+        for col in range((board_size**2)*4)):
+            temp_array.append(-1)
+        matrix.append(temp_array)
+
+    base = 0
+    # go through row-column constraints
+    for
+
+}
+
+def get_matrix(ny_times_puzzle, universe):
+    matrix = []
+
+
+    return matrix
 
 if __name__ == '__main__':
     ny_times_correct = np.array([[2,3,4,9,5,6,7,8,1],
@@ -63,5 +65,7 @@ if __name__ == '__main__':
                          [0,8,0,0,2,9,0,0,7],
                          [6,7,0,0,0,0,2,9,0],
                          [0,0,0,4,0,0,6,1,0]])
+    universe = [1,2,3,4,5,6,7,8,9]
+    ny_times_matrix = get_matrix(ny_times_puzzle, universe)
     our_solution = solve(ny_times_puzzle)
     print(np.array_equal(our_solution,ny_times_correct))
