@@ -5,10 +5,10 @@ import numpy as np
 import math
 
 def check_row(puzzle, box):
-    return [elem for elem in puzzle[box[0]] if elem != 0]
+    return [elem for elem in puzzle[box[0]] if elem != 0 and type(elem) is int]
 
 def check_col(puzzle, box):
-    return [elem[box[1]] for elem in puzzle if elem[box[1]] != 0]
+    return [elem[box[1]] for elem in puzzle if elem[box[1]] != 0 and type(elem[box[1]]) is int]
 
 def check_box(puzzle, box):
     box_size = int(math.sqrt(len(puzzle)))
@@ -18,7 +18,8 @@ def check_box(puzzle, box):
     elements = []
     for row in temp_box:
         for elem in row[j*box_size: j*box_size + box_size]:
-            elements.append(elem)
+            if elem != 0 and type(elem) is int:
+                elements.append(elem)
     return elements
 
 def sole_candidate(puzzle, box):
@@ -30,6 +31,8 @@ def sole_candidate(puzzle, box):
     possibilities = list(set(range(1, n+1)).difference(set(violations)))
     if len(possibilities) == 1:
         puzzle[box[0]][box[1]] = possibilities[0]
+    else:
+        puzzle[box[0]][box[1]] = possibilities
     return puzzle
 
 def unique_candidate(puzzle):
@@ -40,9 +43,13 @@ def unique_candidate(puzzle):
             for digit in range(1,n+1):
                 row_count = [i for i in range(i*box_size, (i+1)*box_size) if digit not in check_row(puzzle, [i,0])]
                 col_count = [j for j in range(j*box_size, (j+1)*box_size) if digit not in check_col(puzzle, [0,j])]
-                # print(i, j, row_count, col_count)
-                if len(row_count) == 1 and len(col_count) == 1 and digit not in check_box(puzzle, [i*box_size,j*box_size]):
-                    puzzle[row_count[0]][col_count[0]] = digit                   
+                possible = []
+                for row in row_count:
+                    for col in col_count:
+                        if (puzzle[row][col] == 0 or type(puzzle[row][col]) is list) and digit not in check_box(puzzle, [row, col]):
+                            possible.append([row,col])
+                if len(possible) == 1:
+                    puzzle[possible[0][0]][possible[0][1]] = digit                  
     return puzzle
 
 def manually_solve(puzzle):
@@ -55,16 +62,16 @@ def manually_solve(puzzle):
         for i in range(n):
             for j in range(n):
                 box = [i,j]                
-                if puzzle[i][j] == 0:
+                if puzzle[i][j] == 0 or type(puzzle[i][j]) is not int:
                     puzzle = sole_candidate(puzzle, box) 
-        # print("Round {}, sole done: {}".format(count, puzzle))
+        print("Round {}, sole done: {}".format(count, puzzle))
         # methods that use the whole grid
         puzzle = unique_candidate(puzzle)
-        # print("Round {}, unique done: {}".format(count, puzzle))
+        print("Round {}, unique done: {}".format(count, puzzle))
         # final check to see if the methods changed added on a digit
-        if np.array_equal(orig_puzzle, puzzle):
+        if np.array_equal(orig_puzzle, np.array(puzzle)):
             added_on = False
-        count += 1
+        count += 1        
         # print(count)
     return puzzle
 
@@ -91,13 +98,16 @@ if __name__ == '__main__':
     # print(np.array_equal(our_solution,ny_times_correct))
 
     #sammy's puzzle
-    puzzle = np.array([[0,0,0,6,0,3,0,0,7],
-                       [3,0,0,0,0,2,9,0,0],
-                       [6,0,0,1,7,0,0,0,0],
-                       [4,0,2,0,9,0,0,1,6],
-                       [0,0,7,0,0,0,4,0,0],
-                       [9,6,0,0,1,0,2,0,5],
-                       [0,0,0,0,2,1,0,0,4],
-                       [0,0,4,9,0,0,0,0,1],
-                       [8,0,0,5,0,6,0,0,0]])
-    print(manually_solve(puzzle))
+    puzzle = [[0,0,0,6,0,3,0,0,7],
+              [3,0,0,0,0,2,9,0,0],
+              [6,0,0,1,7,0,0,0,0],
+              [4,0,2,0,9,0,0,1,6],
+              [0,0,7,0,0,0,4,0,0],
+              [9,6,0,0,1,0,2,0,5],
+              [0,0,0,0,2,1,0,0,4],
+              [0,0,4,9,0,0,0,0,1],
+              [8,0,0,5,0,6,0,0,0]]
+    version = manually_solve(puzzle)
+    for arr in version:
+        print(arr)
+
