@@ -41,15 +41,48 @@ def unique_candidate(puzzle):
     for i in range(box_size):
         for j in range(box_size):
             for digit in range(1,n+1):
-                row_count = [i for i in range(i*box_size, (i+1)*box_size) if digit not in check_row(puzzle, [i,0])]
-                col_count = [j for j in range(j*box_size, (j+1)*box_size) if digit not in check_col(puzzle, [0,j])]
+                row_count = [k for k in range(i*box_size, (i+1)*box_size) if digit not in check_row(puzzle, [k,0])]
+                col_count = [l for l in range(j*box_size, (j+1)*box_size) if digit not in check_col(puzzle, [0,l])]
+                #unique candidate
                 possible = []
                 for row in row_count:
                     for col in col_count:
                         if (puzzle[row][col] == 0 or type(puzzle[row][col]) is list) and digit not in check_box(puzzle, [row, col]):
                             possible.append([row,col])
                 if len(possible) == 1:
-                    puzzle[possible[0][0]][possible[0][1]] = digit                  
+                    puzzle[possible[0][0]][possible[0][1]] = digit                 
+    return puzzle
+
+def final_sweep(puzzle):
+    for row in range(len(puzzle)):
+        for col in range(len(puzzle)):
+            if type(puzzle[row][col]) is not int and len(puzzle[row][col]) == 1:
+                puzzle[row][col] = puzzle[row][col][0]
+    return puzzle
+
+def np_puzzle(puzzle):
+    zero_puzzle = [[elem if type(elem) is int else 0 for elem in row] for row in puzzle]
+    return np.array(zero_puzzle)
+
+
+def naked_subset(puzzle):
+    for row in range(len(puzzle)):
+        for col in range(len(puzzle)):
+            if type(puzzle[row][col]) is not int:
+                # find naked subsets and delete its integers from rest of row
+                row_poss = [i for i in puzzle[row] if type(i) is not int and set(i) == set(puzzle[row][col])]
+                if len(row_poss) == len(puzzle[row][col]):
+                    delete = [j for j in range(len(row)) if j not in row_poss and type(puzzle[row][j]) is not int]
+                    for elem in delete:
+                        for digit in puzzle[row][col]:
+                            puzzle[row][elem].remove(digit)
+                # find naked subsets and delete its integers from rest of column
+                col_poss = [i for i in range(len(puzzle)) if type(puzzle[i][col]) is not int and set(puzzle[i][col]) == set(puzzle[row][col])]
+                if len(col_poss) == len(puzzle[row][col]):
+                    delete = [j for j in range(len(puzzle)) if j not in col_poss and type(puzzle[j][col]) is not int]
+                    for elem in delete:
+                        for digit in puzzle[row][col]:
+                            puzzle[row][elem].remove(digit)
     return puzzle
 
 def manually_solve(puzzle):
@@ -57,7 +90,7 @@ def manually_solve(puzzle):
     added_on = True
     count = 0
     while added_on:
-        orig_puzzle = np.copy(puzzle)
+        orig_puzzle = np.copy(np_puzzle(puzzle))
         # methods for a single box
         for i in range(n):
             for j in range(n):
@@ -69,10 +102,11 @@ def manually_solve(puzzle):
         puzzle = unique_candidate(puzzle)
         print("Round {}, unique done: {}".format(count, puzzle))
         # final check to see if the methods changed added on a digit
-        if np.array_equal(orig_puzzle, np.array(puzzle)):
+        puzzle = naked_subset(puzzle)
+        puzzle = final_sweep(puzzle)
+        if np.array_equal(orig_puzzle, np_puzzle(puzzle)):
             added_on = False
-        count += 1        
-        # print(count)
+        count += 1    
     return puzzle
 
 if __name__ == '__main__':
@@ -108,6 +142,4 @@ if __name__ == '__main__':
               [0,0,4,9,0,0,0,0,1],
               [8,0,0,5,0,6,0,0,0]]
     version = manually_solve(puzzle)
-    for arr in version:
-        print(arr)
-
+    print(np_puzzle(version))
