@@ -5,12 +5,15 @@ import numpy as np
 import math
 
 def check_row(puzzle, box):
+    """Returns all elements in the given row"""
     return [elem for elem in puzzle[box[0]] if elem != 0 and type(elem) is int]
 
 def check_col(puzzle, box):
+    """Returns all elements in the given column"""
     return [elem[box[1]] for elem in puzzle if elem[box[1]] != 0 and type(elem[box[1]]) is int]
 
 def check_box(puzzle, box):
+    """Returns all elements in the given block"""
     box_size = int(math.sqrt(len(puzzle)))
     i = box[0] // box_size
     j = box[1] // box_size
@@ -23,6 +26,7 @@ def check_box(puzzle, box):
     return elements
 
 def sole_candidate(puzzle, box):
+    """Compiles list of possible candidates, assigns digit if only one option"""
     n = len(puzzle)
     violations = []
     violations.extend(check_row(puzzle, box))
@@ -36,6 +40,7 @@ def sole_candidate(puzzle, box):
     return puzzle
 
 def unique_candidate(puzzle):
+    """Checks block interactions to assign any unique candidates"""
     n = len(puzzle)    
     box_size = int(math.sqrt(n))
     for i in range(box_size):
@@ -54,6 +59,7 @@ def unique_candidate(puzzle):
     return puzzle
 
 def final_sweep(puzzle):
+    """Final check to ensure techniques for removing candidates didn't expose new sole candidates"""
     for row in range(len(puzzle)):
         for col in range(len(puzzle)):
             if type(puzzle[row][col]) is not int and len(puzzle[row][col]) == 1:
@@ -61,11 +67,13 @@ def final_sweep(puzzle):
     return puzzle
 
 def np_puzzle(puzzle):
+    """Restore puzzle to digits and 0s for checking for change"""
     zero_puzzle = [[elem if type(elem) is int else 0 for elem in row] for row in puzzle]
     return np.array(zero_puzzle)
 
 
 def naked_subset(puzzle):
+    """Removes candidates if those candidates must be assigned to boxes in that column/row"""
     for row in range(len(puzzle)):
         for col in range(len(puzzle)):
             if type(puzzle[row][col]) is not int:
@@ -86,6 +94,7 @@ def naked_subset(puzzle):
     return puzzle
 
 def manually_solve(puzzle):
+    """Compilation of techniques to run until puzzle is complete"""
     n = len(puzzle)
     added_on = True
     count = 0
