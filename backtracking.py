@@ -78,6 +78,21 @@ if __name__ == "__main__":
      solve(problem2, 4)
      print_grid(problem2, 4)
      print test_correctness(problem2,4)
+     
+     hardproblem = np.array([[0,0,0,6,0,3,0,0,7],
+              [3,0,0,0,0,2,9,0,0],
+              [6,0,0,1,7,0,0,0,0],
+              [4,0,2,0,9,0,0,1,6],
+              [0,0,7,0,0,0,4,0,0],
+              [9,6,0,0,1,0,2,0,5],
+              [0,0,0,0,2,1,0,0,4],
+              [0,0,4,9,0,0,0,0,1],
+              [8,0,0,5,0,6,0,0,0]])
+    
+     
+     solve(hardproblem, 9)
+     print_grid(hardproblem, 9)
+     print test_correctness(hardproblem, 9)
                                              
      solution = np.array([[4,3,5,2,6,9,7,8,1],
                          [6,8,2,5,7,1,4,9,3],
@@ -88,6 +103,8 @@ if __name__ == "__main__":
                          [5,1,9,3,2,6,8,7,4],
                          [2,4,8,9,5,7,1,3,6],
                          [7,6,3,4,1,8,2,5,9]])
+                         
+                         
      #print_grid(solution)
                          
                     
