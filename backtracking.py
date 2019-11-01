@@ -1,5 +1,15 @@
 # purely backtracking algorithm
 
+# Note: this code is largely based off of algorithms available online 
+# and generalized to include an n parameter so it can be used on sudoku
+# puzzles of different sizes
+
+# Code that was referenced includes:
+# https://codepumpkin.com/sudoku-solver-using-backtracking/
+# https://www.geeksforgeeks.org/sudoku-backtracking-7/
+# https://techwithtim.net/tutorials/python-programming/sudoku-solver-backtracking/
+
+
 import numpy as np
 import math
 from tester import test_correctness
