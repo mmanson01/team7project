@@ -117,7 +117,14 @@ def base_sudoku_grid():
 
     return matrix
 
-
+def add_original_puzzle(puzzle, matrix):
+    # 9 elems per rxcx
+    matrix_row_index = 0
+    for row in puzzle:
+        for elem in row:
+            # there is already an element in this space
+            if elem !=0:
+                pass
 
 
 if __name__ == '__main__':
