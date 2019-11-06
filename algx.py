@@ -124,22 +124,25 @@ def add_original_puzzle(puzzle, matrix):
     already_changed = []
     # 9 elems per rxcx
     matrix_row_index = 0
+    matrix_col_index = 0
+    starting_row = 0
     for row in puzzle:
-        matrix_col_index = 0
+
         for elem in row:
             # there is already an element in this space
             if elem !=0:
+                print "elem: ", elem
                 # index for elem to keep 1 is elem - 1
                 index_elem = elem - 1
 
                 # adjust row constraints
                 # 729 rows so we would do num_rows / row_index for starting matrix rows
-                starting_row = matrix_row_index + matrix_col_index
+                # starting_row += matrix_row_index
                 print "STARTING ROW: ", matrix_row_index, matrix_col_index
 
                 for index in range(9):
                     print index, " ", index_elem
-                    x = starting_row + index
+                    x = matrix_row_index + index
                     y = matrix_col_index + index
                     print "index + index_elem: ", index, index_elem
                     if index != index_elem:
@@ -159,10 +162,12 @@ def add_original_puzzle(puzzle, matrix):
 
                 # adjust cell constraints
 
+            matrix_row_index += 9
+        matrix_col_index += 9
+        if matrix_row_index == 324 or matrix_col_index == 324:
+            break
+        # matrix_row_index += 81
 
-            matrix_col_index += 1
-        matrix_row_index += 9
-        break
     return matrix
 
 
@@ -177,7 +182,7 @@ if __name__ == '__main__':
                          [4,8,1,6,2,9,3,5,7],
                          [6,7,3,5,8,1,2,9,4],
                          [5,9,2,4,7,3,6,1,8]])
-    ny_times_puzzle = np.array([[2,3,4,9,5,6,0,8,0],
+    ny_times_puzzle = np.array([[0,3,4,9,5,6,0,8,0],
                          [8,6,5,0,0,7,0,3,9],
                          [0,0,9,0,3,0,0,0,2],
                          [3,0,0,7,0,5,1,4,0],
@@ -193,8 +198,9 @@ if __name__ == '__main__':
     # print base_matrix[486][216]
 
     complete_matrix = add_original_puzzle(ny_times_puzzle, base_matrix)
-    for row in range(27):
-        print complete_matrix[row][0:9]
+    for row in range(324):
+        print row, complete_matrix[row][0:45]
+
     # print(complete_matrix[0][0:9])
     # ny_times_matrix = get_matrix(ny_times_puzzle, universe)
     # our_solution = solve(ny_times_puzzle)
