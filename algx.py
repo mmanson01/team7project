@@ -13,6 +13,8 @@
 import numpy as np
 import math
 board_size = 9
+board_rows = board_size**3
+board_cols = (board_size**2)*4
 
 # constraints:
 # 1) values 1-9 have to be in every row, column, box
@@ -109,22 +111,60 @@ def base_sudoku_grid():
     row_delta = 0
     col_delta = 243
     for row in matrix:
-        print row_delta
         row[col_delta + row_delta] = 1
         row_delta += 1
         if col_delta == 324:
+            break
+        if row_delta == 81:
             break
 
     return matrix
 
 def add_original_puzzle(puzzle, matrix):
+    already_changed = []
     # 9 elems per rxcx
     matrix_row_index = 0
     for row in puzzle:
+        matrix_col_index = 0
         for elem in row:
             # there is already an element in this space
             if elem !=0:
-                pass
+                # index for elem to keep 1 is elem - 1
+                index_elem = elem - 1
+
+                # adjust row constraints
+                # 729 rows so we would do num_rows / row_index for starting matrix rows
+                starting_row = matrix_row_index + matrix_col_index
+                print "STARTING ROW: ", matrix_row_index, matrix_col_index
+
+                for index in range(9):
+                    print index, " ", index_elem
+                    x = starting_row + index
+                    y = matrix_col_index + index
+                    print "index + index_elem: ", index, index_elem
+                    if index != index_elem:
+                        if (x,y) not in already_changed:
+                            # temp_matrix_col_index = matrix_col_index
+                            matrix[x][y] = 0
+                    else:
+                        print "index_elem: ",  index_elem
+                        temp_matrix_col_index = matrix_col_index
+                        print "BEFORE: ", matrix[x][y]
+                        matrix[x][y] = 1
+                        print "AFTER: ", matrix[starting_row + index][temp_matrix_col_index + index]
+                        already_changed.append((x,y))
+                # adjust col constraints
+
+                # adjust block constraints
+
+                # adjust cell constraints
+
+
+            matrix_col_index += 1
+        matrix_row_index += 9
+        break
+    return matrix
+
 
 
 if __name__ == '__main__':
@@ -137,7 +177,7 @@ if __name__ == '__main__':
                          [4,8,1,6,2,9,3,5,7],
                          [6,7,3,5,8,1,2,9,4],
                          [5,9,2,4,7,3,6,1,8]])
-    ny_times_puzzle = np.array([[0,3,4,9,5,6,0,8,0],
+    ny_times_puzzle = np.array([[2,3,4,9,5,6,0,8,0],
                          [8,6,5,0,0,7,0,3,9],
                          [0,0,9,0,3,0,0,0,2],
                          [3,0,0,7,0,5,1,4,0],
@@ -148,9 +188,14 @@ if __name__ == '__main__':
                          [0,0,0,4,0,0,6,1,0]])
     universe = [1,2,3,4,5,6,7,8,9]
     base_matrix = base_sudoku_grid()
-    print len(base_matrix)
-    print len(base_matrix[0])
-    print base_matrix[486][216]
+    # print len(base_matrix)
+    # print len(base_matrix[0])
+    # print base_matrix[486][216]
+
+    complete_matrix = add_original_puzzle(ny_times_puzzle, base_matrix)
+    for row in range(27):
+        print complete_matrix[row][0:9]
+    # print(complete_matrix[0][0:9])
     # ny_times_matrix = get_matrix(ny_times_puzzle, universe)
     # our_solution = solve(ny_times_puzzle)
     # print(np.array_equal(our_solution,ny_times_correct))
