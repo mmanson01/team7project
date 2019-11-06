@@ -121,7 +121,8 @@ def buildMat(board_size, puzzle):
         if row_delta == 81:
             break
 
-    #at this point, the base matrix is built, now to edit it for the puzzle specific one    return matrix
+    #at this point, the base matrix is built, now to edit it for the puzzle specific one
+    return matrix
 
 def puzzleSpecific(matrix, puzzle):
     dimension = len(puzzle[0])
@@ -139,25 +140,26 @@ def puzzleSpecific(matrix, puzzle):
                         matrix[rcSpacer + i][column + 3 * (dimension ** 2)] = 1
                 for i in range(dimension):
                     if i != thisNum:
-                        matrix[(rcSpacer + i) + (dimension * i)][i + column + 3 * (dimension ** 2)] = 0
+                        matrix[(rcSpacer + i) + (dimension * i)][(i * column) + 3 * (dimension ** 2)] = 0
                 
                 #row contradiction changes
                 for i in range(dimension):
-                    matrix[(dimension * i * rowIndex) + thisNum][column + thisNum] = 0
+                    matrix[(dimension * (i + (dimension * rowIndex))) + thisNum][column + thisNum] = 0
                     if i == rowIndex:
                         for j in range(dimension):
-                            matrix[(dimension * i * rowIndex) + j][column + j] = 0
-                        matrix[(dimension * i) + thisNum][column + thisNum] = 1
+                            matrix[(dimension * (i + (dimension * rowIndex))) + j][column + j] = 0
+                        matrix[(dimension * (i + (dimension * rowIndex))) + thisNum][column + thisNum] = 1
 
                 #column contradiction changes
                 for i in range(dimension):
-                    matrix[] = 0
-                    
+                    matrix[thisNum + ((dimension ** 2) * i)][thisNum + (column * dimension) + 2 * (dimension ** 2)] = 0
+                    if i == rowIndex:
+                        for j in range(dimension):
+                            matrix[j + ((dimension ** 2) * i)][i + (column * dimension) + 2 * (dimension ** 2)] = 0
+                        matrix[thisNum + ((dimension ** 2) * i)][thisNum + (column * dimension) + 2 * (dimension ** 2)] = 1
 
-
-    
-
-                
+                #box contradiction changes
+          
 
 
 def dancingLinks(puzzle, ourMat):
