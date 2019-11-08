@@ -97,7 +97,7 @@ def naked_subset(puzzle):
                                 puzzle[elem][col].remove(digit)
     return puzzle
 
-def naked_ish(puzzle):
+def naked_singles(puzzle):
     """Takes away possibilities from rows/cols by observing interactions"""
     box_size = int(math.sqrt(len(puzzle)))
     for i in range(box_size):
@@ -126,8 +126,8 @@ def naked_ish(puzzle):
                         if fits:
                             col_count.append(col)
                     
-                    print("Box",i,j)
-                    print(digit, row_count, col_count)
+                    # print("Box",i,j)
+                    # print(digit, row_count, col_count)
                     if len(row_count) == 1:
                         row = row_count[0]
                         for col in range(len(puzzle)):
@@ -160,7 +160,7 @@ def manually_solve(puzzle):
         puzzle = unique_candidate(puzzle)
         # print("Round {}, unique done: {}".format(count, puzzle))
         # final check to see if the methods changed added on a digit
-        puzzle = naked_ish(puzzle)
+        puzzle = naked_singles(puzzle)
         puzzle = final_sweep(puzzle)
         if np.array_equal(orig_puzzle, np_puzzle(puzzle)):
             added_on = False
