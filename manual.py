@@ -27,18 +27,22 @@ def check_box(puzzle, box):
                 elements.append(elem)
     return elements
 
-def sole_candidate(puzzle, box):
+def sole_candidate(puzzle):
     """Compiles list of possible candidates, assigns digit if only one option"""
     n = len(puzzle)
-    violations = []
-    violations.extend(check_row(puzzle, box))
-    violations.extend(check_col(puzzle, box))
-    violations.extend(check_box(puzzle, box))
-    possibilities = list(set(range(1, n+1)).difference(set(violations)))
-    if len(possibilities) == 1:
-        puzzle[box[0]][box[1]] = possibilities[0]
-    else:
-        puzzle[box[0]][box[1]] = possibilities
+    for i in range(n):
+        for j in range(n):
+            box = [i,j]
+            if (type(puzzle[i][j]) is int and puzzle[i][j] == 0) or (type(puzzle[i][j]) is not int):
+                violations = []
+                violations.extend(check_row(puzzle, box))
+                violations.extend(check_col(puzzle, box))
+                violations.extend(check_box(puzzle, box))
+                possibilities = list(set(range(1, n+1)).difference(set(violations)))
+                if len(possibilities) == 1:
+                    puzzle[box[0]][box[1]] = possibilities[0]
+                else:
+                    puzzle[box[0]][box[1]] = possibilities
     return puzzle
 
 def unique_candidate(puzzle):
@@ -80,7 +84,10 @@ def naked_subset(puzzle):
         for col in range(len(puzzle)):
             if type(puzzle[row][col]) is not int:
                 # find naked subsets and delete its integers from rest of row
-                row_poss = [i for i in puzzle[row] if type(i) is not int and set(i) == set(puzzle[row][col])]
+                row_poss = [i for i in range(len(puzzle[row])) if type(puzzle[row][i]) is not int and set(puzzle[row][i]) == set(puzzle[row][col])]
+                # print("Current box", row, col)
+                # print("Contents:", puzzle[row][col])
+                # print("Possibilities", row_poss)
                 if len(row_poss) == len(puzzle[row][col]):
                     delete = [j for j in range(len(puzzle)) if j not in row_poss and type(puzzle[row][j]) is not int]
                     for elem in delete:
@@ -89,6 +96,9 @@ def naked_subset(puzzle):
                                 puzzle[row][elem].remove(digit)
                 # find naked subsets and delete its integers from rest of column
                 col_poss = [i for i in range(len(puzzle)) if type(puzzle[i][col]) is not int and set(puzzle[i][col]) == set(puzzle[row][col])]
+                # print("Current box", row, col)
+                # print("Contents:", puzzle[row][col])
+                # print("Possibilities", col_poss)                
                 if len(col_poss) == len(puzzle[row][col]):
                     delete = [j for j in range(len(puzzle)) if j not in col_poss and type(puzzle[j][col]) is not int]
                     for elem in delete:
@@ -144,23 +154,13 @@ def naked_singles(puzzle):
 
 def manually_solve(puzzle):
     """Compilation of techniques to run until puzzle is complete"""
-    n = len(puzzle)
     added_on = True
     count = 0
     while added_on:
         orig_puzzle = np.copy(np_puzzle(puzzle))
-        # methods for a single box
-        for i in range(n):
-            for j in range(n):
-                box = [i,j]                
-                if puzzle[i][j] == 0 or type(puzzle[i][j]) is not int:
-                    puzzle = sole_candidate(puzzle, box) 
-        # print("Round {}, sole done: {}".format(count, puzzle))
-        # methods that use the whole grid
+        puzzle = sole_candidate(puzzle) 
         puzzle = unique_candidate(puzzle)
-        # print("Round {}, unique done: {}".format(count, puzzle))
-        # final check to see if the methods changed added on a digit
-        puzzle = naked_singles(puzzle)
+        puzzle = naked_subset(puzzle)
         puzzle = final_sweep(puzzle)
         if np.array_equal(orig_puzzle, np_puzzle(puzzle)):
             added_on = False
@@ -174,28 +174,28 @@ def check_completion(puzzle):
     return zeroes
 
 if __name__ == '__main__':
-    ny_times_correct = [[2,3,4,9,5,6,7,8,1],
-                         [8,6,5,2,1,7,4,3,9],
-                         [7,1,9,8,3,4,5,6,2],
-                         [3,2,8,7,9,5,1,4,6],
-                         [1,4,7,3,6,8,9,2,5],
-                         [9,5,6,1,4,2,8,7,3],
-                         [4,8,1,6,2,9,3,5,7],
-                         [6,7,3,5,8,1,2,9,4],
-                         [5,9,2,4,7,3,6,1,8]]
-    ny_times_puzzle = [[0,3,4,9,5,6,0,8,0],
-                         [8,6,5,0,0,7,0,3,9],
-                         [0,0,9,0,3,0,0,0,2],
-                         [3,0,0,7,0,5,1,4,0],
-                         [1,0,0,3,0,8,0,0,5],
-                         [9,0,6,1,0,0,0,0,0],
-                         [0,8,0,0,2,9,0,0,7],
-                         [6,7,0,0,0,0,2,9,0],
-                         [0,0,0,4,0,0,6,1,0]]
-    our_solution = manually_solve(ny_times_puzzle)
-    print(np.array_equal(our_solution,ny_times_correct))
+    # ny_times_correct = [[2,3,4,9,5,6,7,8,1],
+    #                      [8,6,5,2,1,7,4,3,9],
+    #                      [7,1,9,8,3,4,5,6,2],
+    #                      [3,2,8,7,9,5,1,4,6],
+    #                      [1,4,7,3,6,8,9,2,5],
+    #                      [9,5,6,1,4,2,8,7,3],
+    #                      [4,8,1,6,2,9,3,5,7],
+    #                      [6,7,3,5,8,1,2,9,4],
+    #                      [5,9,2,4,7,3,6,1,8]]
+    # ny_times_puzzle = [[0,3,4,9,5,6,0,8,0],
+    #                      [8,6,5,0,0,7,0,3,9],
+    #                      [0,0,9,0,3,0,0,0,2],
+    #                      [3,0,0,7,0,5,1,4,0],
+    #                      [1,0,0,3,0,8,0,0,5],
+    #                      [9,0,6,1,0,0,0,0,0],
+    #                      [0,8,0,0,2,9,0,0,7],
+    #                      [6,7,0,0,0,0,2,9,0],
+    #                      [0,0,0,4,0,0,6,1,0]]
+    # our_solution = manually_solve(ny_times_puzzle)
+    # print(np.array_equal(our_solution,ny_times_correct))
 
-    #medium puzzle
+    # #medium puzzle
     medium = [
         [0,0,9,0,0,0,4,0,0],
         [0,0,0,0,1,7,0,8,0],
@@ -207,15 +207,16 @@ if __name__ == '__main__':
         [0,0,0,8,0,0,0,0,0],
         [0,0,0,0,7,0,6,0,0]
     ]
-    for row in manually_solve(medium):
-        for elem in row:
-            print(elem)
+    medium_manual = manually_solve(medium)
+    # for row in medium_manual:
+    #     for elem in row:
+    #         print(elem)
     
 
-    medium_manual = np_puzzle(manually_solve(medium))
-    print(medium_manual)
-    print(check_completion(medium_manual))
-    print(test_correctness(medium_manual,9))
+    # medium_manual = np_puzzle(medium_manual)
+    # print(medium_manual)
+    # print(check_completion(medium_manual))
+    # print(test_correctness(medium_manual,9))
 
     # #sammy's puzzle
     # puzzle = [[0,0,0,6,0,3,0,0,7],
@@ -230,3 +231,23 @@ if __name__ == '__main__':
     # version = np_puzzle(manually_solve(puzzle))
     # print(version)
     # print(check_completion(version))
+
+
+    # current_medium = [[0,0,9,3,8,5,4,6,1],
+    #                   [0,6,0,9,1,7,0,8,0],
+    #                   [0,1,0,4,6,2,0,9,7],
+    #                   [0,8,2,5,0,0,7,1,0],
+    #                   [0,3,7,1,0,0,0,0,0],
+    #                   [1,9,5,7,0,8,0,4,6],
+    #                   [0,5,0,6,9,3,0,7,4],
+    #                   [0,0,0,8,5,4,0,0,0],
+    #                   [0,4,0,2,7,1,6,0,0]]
+    # for i in range(9):
+    #     for j in range(9):
+    #         if current_medium[i][j] == 0:
+    #             current_medium = sole_candidate(current_medium, [i,j])
+    # print(np_puzzle(current_medium))
+    # naked = final_sweep(naked_subset(current_medium))
+    # for row in naked:
+    #     for elem in row:
+    #         print(elem)
