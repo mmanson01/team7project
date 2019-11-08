@@ -4,6 +4,8 @@
 import numpy as np
 import math
 
+from tester import test_correctness
+
 def check_row(puzzle, box):
     """Returns all elements in the given row"""
     return [elem for elem in puzzle[box[0]] if elem != 0 and type(elem) is int]
@@ -80,17 +82,64 @@ def naked_subset(puzzle):
                 # find naked subsets and delete its integers from rest of row
                 row_poss = [i for i in puzzle[row] if type(i) is not int and set(i) == set(puzzle[row][col])]
                 if len(row_poss) == len(puzzle[row][col]):
-                    delete = [j for j in range(len(row)) if j not in row_poss and type(puzzle[row][j]) is not int]
+                    delete = [j for j in range(len(puzzle)) if j not in row_poss and type(puzzle[row][j]) is not int]
                     for elem in delete:
                         for digit in puzzle[row][col]:
-                            puzzle[row][elem].remove(digit)
+                            if digit in puzzle[row][elem]:
+                                puzzle[row][elem].remove(digit)
                 # find naked subsets and delete its integers from rest of column
                 col_poss = [i for i in range(len(puzzle)) if type(puzzle[i][col]) is not int and set(puzzle[i][col]) == set(puzzle[row][col])]
                 if len(col_poss) == len(puzzle[row][col]):
                     delete = [j for j in range(len(puzzle)) if j not in col_poss and type(puzzle[j][col]) is not int]
                     for elem in delete:
                         for digit in puzzle[row][col]:
-                            puzzle[row][elem].remove(digit)
+                            if digit in puzzle[elem][col]:
+                                puzzle[elem][col].remove(digit)
+    return puzzle
+
+def naked_ish(puzzle):
+    """Takes away possibilities from rows/cols by observing interactions"""
+    box_size = int(math.sqrt(len(puzzle)))
+    for i in range(box_size):
+        for j in range(box_size):
+            #have entered the box level
+            for digit in range(1, len(puzzle) + 1):
+                if digit not in check_box(puzzle, [i*box_size, j*box_size]):
+                    # row_count = [k for k in range(i*box_size, (i+1)*box_size) if digit not in check_row(puzzle, [k,0])]
+                    # col_count = [l for l in range(j*box_size, (j+1)*box_size) if digit not in check_col(puzzle, [0,l])]
+                    # we want every row and col that this digit could realistically be in
+                        # ergo, it must be an entry in that column
+                    row_count = []
+                    for row in range(i*box_size, (i+1)*box_size):
+                        fits = False
+                        for col in range(j*box_size, (j+1)*box_size):
+                            if type(puzzle[row][col]) is not int and digit in puzzle[row][col]:
+                                fits = True
+                        if fits:
+                            row_count.append(row)
+                    col_count = []
+                    for col in range(j*box_size, (j+1)*box_size):
+                        fits = False
+                        for row in range(i*box_size, (i+1)*box_size):
+                            if type(puzzle[row][col]) is not int and digit in puzzle[row][col]:
+                                fits = True
+                        if fits:
+                            col_count.append(col)
+                    
+                    print("Box",i,j)
+                    print(digit, row_count, col_count)
+                    if len(row_count) == 1:
+                        row = row_count[0]
+                        for col in range(len(puzzle)):
+                            if col not in range(j*box_size, (j+1)*box_size) and type(puzzle[row][col]) is not int:
+                                if digit in puzzle[row][col]:
+                                    puzzle[row][col].remove(digit)
+                    if len(col_count) == 1:
+                        col = col_count[0]
+                        for row in range(len(puzzle)):
+                            if row not in range(i*box_size, (i+1)*box_size) and type(puzzle[row][col]) is not int:
+                                if digit in puzzle[row][col]:
+                                    puzzle[row][col].remove(digit)
     return puzzle
 
 def manually_solve(puzzle):
@@ -106,49 +155,78 @@ def manually_solve(puzzle):
                 box = [i,j]                
                 if puzzle[i][j] == 0 or type(puzzle[i][j]) is not int:
                     puzzle = sole_candidate(puzzle, box) 
-        print("Round {}, sole done: {}".format(count, puzzle))
+        # print("Round {}, sole done: {}".format(count, puzzle))
         # methods that use the whole grid
         puzzle = unique_candidate(puzzle)
-        print("Round {}, unique done: {}".format(count, puzzle))
+        # print("Round {}, unique done: {}".format(count, puzzle))
         # final check to see if the methods changed added on a digit
-        puzzle = naked_subset(puzzle)
+        puzzle = naked_ish(puzzle)
         puzzle = final_sweep(puzzle)
         if np.array_equal(orig_puzzle, np_puzzle(puzzle)):
             added_on = False
-        count += 1    
+        count += 1
     return puzzle
 
-if __name__ == '__main__':
-    # ny_times_correct = np.array([[2,3,4,9,5,6,7,8,1],
-    #                      [8,6,5,2,1,7,4,3,9],
-    #                      [7,1,9,8,3,4,5,6,2],
-    #                      [3,2,8,7,9,5,1,4,6],
-    #                      [1,4,7,3,6,8,9,2,5],
-    #                      [9,5,6,1,4,2,8,7,3],
-    #                      [4,8,1,6,2,9,3,5,7],
-    #                      [6,7,3,5,8,1,2,9,4],
-    #                      [5,9,2,4,7,3,6,1,8]])
-    # ny_times_puzzle = np.array([[0,3,4,9,5,6,0,8,0],
-    #                      [8,6,5,0,0,7,0,3,9],
-    #                      [0,0,9,0,3,0,0,0,2],
-    #                      [3,0,0,7,0,5,1,4,0],
-    #                      [1,0,0,3,0,8,0,0,5],
-    #                      [9,0,6,1,0,0,0,0,0],
-    #                      [0,8,0,0,2,9,0,0,7],
-    #                      [6,7,0,0,0,0,2,9,0],
-    #                      [0,0,0,4,0,0,6,1,0]])
-    # our_solution = manually_solve(ny_times_puzzle)
-    # print(np.array_equal(our_solution,ny_times_correct))
+def check_completion(puzzle):
+    zeroes = 0
+    for row in puzzle:
+        zeroes += np.sum(row==0)
+    return zeroes
 
-    #sammy's puzzle
-    puzzle = [[0,0,0,6,0,3,0,0,7],
-              [3,0,0,0,0,2,9,0,0],
-              [6,0,0,1,7,0,0,0,0],
-              [4,0,2,0,9,0,0,1,6],
-              [0,0,7,0,0,0,4,0,0],
-              [9,6,0,0,1,0,2,0,5],
-              [0,0,0,0,2,1,0,0,4],
-              [0,0,4,9,0,0,0,0,1],
-              [8,0,0,5,0,6,0,0,0]]
-    version = manually_solve(puzzle)
-    print(np_puzzle(version))
+if __name__ == '__main__':
+    ny_times_correct = [[2,3,4,9,5,6,7,8,1],
+                         [8,6,5,2,1,7,4,3,9],
+                         [7,1,9,8,3,4,5,6,2],
+                         [3,2,8,7,9,5,1,4,6],
+                         [1,4,7,3,6,8,9,2,5],
+                         [9,5,6,1,4,2,8,7,3],
+                         [4,8,1,6,2,9,3,5,7],
+                         [6,7,3,5,8,1,2,9,4],
+                         [5,9,2,4,7,3,6,1,8]]
+    ny_times_puzzle = [[0,3,4,9,5,6,0,8,0],
+                         [8,6,5,0,0,7,0,3,9],
+                         [0,0,9,0,3,0,0,0,2],
+                         [3,0,0,7,0,5,1,4,0],
+                         [1,0,0,3,0,8,0,0,5],
+                         [9,0,6,1,0,0,0,0,0],
+                         [0,8,0,0,2,9,0,0,7],
+                         [6,7,0,0,0,0,2,9,0],
+                         [0,0,0,4,0,0,6,1,0]]
+    our_solution = manually_solve(ny_times_puzzle)
+    print(np.array_equal(our_solution,ny_times_correct))
+
+    #medium puzzle
+    medium = [
+        [0,0,9,0,0,0,4,0,0],
+        [0,0,0,0,1,7,0,8,0],
+        [0,0,0,0,0,2,0,9,7],
+        [0,8,2,5,0,0,0,0,0],
+        [0,3,7,0,0,0,0,0,0],
+        [1,0,0,0,0,0,0,4,6],
+        [0,5,0,6,9,3,0,7,0],
+        [0,0,0,8,0,0,0,0,0],
+        [0,0,0,0,7,0,6,0,0]
+    ]
+    for row in manually_solve(medium):
+        for elem in row:
+            print(elem)
+    
+
+    medium_manual = np_puzzle(manually_solve(medium))
+    print(medium_manual)
+    print(check_completion(medium_manual))
+    print(test_correctness(medium_manual,9))
+
+    # #sammy's puzzle
+    # puzzle = [[0,0,0,6,0,3,0,0,7],
+    #           [3,0,0,0,0,2,9,0,0],
+    #           [6,0,0,1,7,0,0,0,0],
+    #           [4,0,2,0,9,0,0,1,6],
+    #           [0,0,7,0,0,0,4,0,0],
+    #           [9,6,0,0,1,0,2,0,5],
+    #           [0,0,0,0,2,1,0,0,4],
+    #           [0,0,4,9,0,0,0,0,1],
+    #           [8,0,0,5,0,6,0,0,0]]
+    # version = np_puzzle(manually_solve(puzzle))
+    # print(version)
+    # print(check_completion(version))
