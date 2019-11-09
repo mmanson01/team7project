@@ -161,6 +161,7 @@ def manually_solve(puzzle):
         puzzle = sole_candidate(puzzle) 
         puzzle = unique_candidate(puzzle)
         puzzle = naked_subset(puzzle)
+        puzzle = naked_singles(puzzle)
         puzzle = final_sweep(puzzle)
         if np.array_equal(orig_puzzle, np_puzzle(puzzle)):
             added_on = False
@@ -196,18 +197,19 @@ if __name__ == '__main__':
     # print(np.array_equal(our_solution,ny_times_correct))
 
     # #medium puzzle
-    medium = [
-        [0,0,9,0,0,0,4,0,0],
-        [0,0,0,0,1,7,0,8,0],
-        [0,0,0,0,0,2,0,9,7],
-        [0,8,2,5,0,0,0,0,0],
-        [0,3,7,0,0,0,0,0,0],
-        [1,0,0,0,0,0,0,4,6],
-        [0,5,0,6,9,3,0,7,0],
-        [0,0,0,8,0,0,0,0,0],
-        [0,0,0,0,7,0,6,0,0]
-    ]
-    medium_manual = manually_solve(medium)
+    # medium = [
+    #     [0,0,9,0,0,0,4,0,0],
+    #     [0,0,0,0,1,7,0,8,0],
+    #     [0,0,0,0,0,2,0,9,7],
+    #     [0,8,2,5,0,0,0,0,0],
+    #     [0,3,7,0,0,0,0,0,0],
+    #     [1,0,0,0,0,0,0,4,6],
+    #     [0,5,0,6,9,3,0,7,0],
+    #     [0,0,0,8,0,0,0,0,0],
+    #     [0,0,0,0,7,0,6,0,0]
+    # ]
+    # medium_manual = manually_solve(medium)
+    # print(np_puzzle(medium_manual))
     # for row in medium_manual:
     #     for elem in row:
     #         print(elem)
@@ -219,18 +221,18 @@ if __name__ == '__main__':
     # print(test_correctness(medium_manual,9))
 
     # #sammy's puzzle
-    # puzzle = [[0,0,0,6,0,3,0,0,7],
-    #           [3,0,0,0,0,2,9,0,0],
-    #           [6,0,0,1,7,0,0,0,0],
-    #           [4,0,2,0,9,0,0,1,6],
-    #           [0,0,7,0,0,0,4,0,0],
-    #           [9,6,0,0,1,0,2,0,5],
-    #           [0,0,0,0,2,1,0,0,4],
-    #           [0,0,4,9,0,0,0,0,1],
-    #           [8,0,0,5,0,6,0,0,0]]
-    # version = np_puzzle(manually_solve(puzzle))
-    # print(version)
-    # print(check_completion(version))
+    puzzle = [[0,0,0,6,0,3,0,0,7],
+              [3,0,0,0,0,2,9,0,0],
+              [6,0,0,1,7,0,0,0,0],
+              [4,0,2,0,9,0,0,1,6],
+              [0,0,7,0,0,0,4,0,0],
+              [9,6,0,0,1,0,2,0,5],
+              [0,0,0,0,2,1,0,0,4],
+              [0,0,4,9,0,0,0,0,1],
+              [8,0,0,5,0,6,0,0,0]]
+    version = np_puzzle(manually_solve(puzzle))
+    print(version)
+    print(check_completion(version))
 
 
     # current_medium = [[0,0,9,3,8,5,4,6,1],
