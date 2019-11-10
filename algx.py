@@ -128,100 +128,63 @@ def add_original_puzzle(puzzle, matrix):
     matrix_row_index = 0
     matrix_col_index = 0
     starting_row = 0
+    cell_starting_column = (board_size**2) * 3
     for row in puzzle:
         elems_in_row = set(row)
+        # part of row constraint
         for elem in row:
-            print "OG elem: ", elem
             # no element, but mark the other elems in the row as  0
             if elem == 0:
                 row_index = starting_row
                 col_index = matrix_col_index
                 for sub_elem in elems_in_row:
                     if sub_elem != 0:
-                        print "ELEM: ", sub_elem, row_index, col_index
                         matrix[row_index+sub_elem-1][col_index+sub_elem-1] = 0
             # there is already an element in this space
             if elem != 0:
-                print "elem: ", elem
                 # index for elem to keep 1 is elem - 1
                 index_elem = elem - 1
 
                 # adjust row constraints
-                # 729 rows so we would do num_rows / row_index for starting matrix rows
-                # starting_row += matrix_row_index
-                print "STARTING ROW: ", matrix_row_index, matrix_col_index
-
                 for index in range(board_size):
-                    print index, " ", index_elem
                     x = matrix_row_index + index
                     y = matrix_col_index + index
-                    print "index + index_elem: ", index, index_elem
-                    print "x + y: ", x, y
                     if index != index_elem:
                         if (x,y) not in already_changed:
                             # temp_matrix_col_index = matrix_col_index
                             matrix[x][y] = 0
                     else:
-                        print "index_elem: ",  index_elem
-                        print "x y : ", x, y
-                        print "BEFORE: ", matrix[x][y]
                         matrix[x][y] = 1
-                        print "AFTER: ", matrix[x][y]
                         already_changed.append((x,y))
+
                 # adjust col constraints
+
 
                 # adjust block constraints
 
                 # adjust cell constraints
+                for index in range(board_size):
+                    # only need to check if cell has something or not
+                    # if cell has an element, then set the rest of the elements
+                    # in that cel lblock to 0
+                    x = matrix_row_index + index
+                    y = cell_starting_column
+                    if index != index_elem:
+                        if (x,y) not in already_changed:
+                            matrix[x][y] = 0
+                    else:
+                        already_changed.append((x,y))
+
 
             matrix_row_index += board_size
             starting_row += board_size
+            cell_starting_column += 1
         matrix_col_index += board_size
         # if matrix_row_index == 324 or matrix_col_index == 324:
         #     break
         # matrix_row_index += 81
         # starting_row += board_size
     return matrix
-
-def puzzleSpecific(matrix, puzzle):
-    dimension = len(puzzle[0])
-    for rowIndex in range(len(puzzle)):
-        row = puzzle[rowIndex]
-        for column in range(len(row)):
-            if row[column] != 0:
-                thisNum = row[column] - 1
-
-                # #row column changes
-                # rcSpacer = dimension * rowIndex
-                # for i in range(dimension):
-                #     matrix[rcSpacer + i][column + 3 * (dimension ** 2)] = 0
-                #     if i == thisNum:
-                #         matrix[rcSpacer + i][column + 3 * (dimension ** 2)] = 1
-                # for i in range(dimension):
-                #     if i != thisNum:
-                #         matrix[(rcSpacer + i) + (dimension * i)][(i * column) + 3 * (dimension ** 2)] = 0
-                #
-                #row contradiction changes
-                # for index in dimension .. [0,9)
-                for i in range(dimension):
-                    #
-                    matrix[(dimension * (i + (dimension * rowIndex))) + thisNum][column + thisNum] = 0
-                    if i == rowIndex:
-                        for j in range(dimension):
-                            matrix[(dimension * (i + (dimension * rowIndex))) + j][column + j] = 0
-                        matrix[(dimension * (i + (dimension * rowIndex))) + thisNum][column + thisNum] = 1
-
-                # #column contradiction changes
-                # for i in range(dimension):
-                #     matrix[thisNum + ((dimension ** 2) * i)][thisNum + (column * dimension) + 2 * (dimension ** 2)] = 0
-                #     if i == rowIndex:
-                #         for j in range(dimension):
-                #             matrix[j + ((dimension ** 2) * i)][i + (column * dimension) + 2 * (dimension ** 2)] = 0
-                #         matrix[thisNum + ((dimension ** 2) * i)][thisNum + (column * dimension) + 2 * (dimension ** 2)] = 1
-
-                #box contradiction changes
-    return matrix
-
 
 
 if __name__ == '__main__':
@@ -261,7 +224,7 @@ if __name__ == '__main__':
     # for row in range(324):
     #     print row, base_matrix[row][243:300]
     for row in range(64):
-        print row, complete_matrix[row][0:16]
+        print row, complete_matrix[row][48:64]
 
     # print(complete_matrix[0][0:9])
     # ny_times_matrix = get_matrix(ny_times_puzzle, universe)
