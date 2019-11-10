@@ -82,7 +82,6 @@ def base_sudoku_grid():
             row_delta = 0
 
     # block constraint
-    # TODO: THIS DOESN'T WORK
     col_delta = (board_size**2) * 2
     row_delta = 0
     num_rows = 0
@@ -121,7 +120,6 @@ def base_sudoku_grid():
             col_delta += 1
             next_row = 0
 
-
     return matrix
 
 def add_original_puzzle(puzzle, matrix):
@@ -137,12 +135,11 @@ def add_original_puzzle(puzzle, matrix):
             # no element, but mark the other elems in the row as  0
             if elem == 0:
                 row_index = starting_row
-                col_index = 0
+                col_index = matrix_col_index
                 for sub_elem in elems_in_row:
-                    if sub_elem == 0:
-                        pass
-                    print "ELEM: ", sub_elem
-                    matrix[row_index+sub_elem-1][col_index+sub_elem-1] = 0
+                    if sub_elem != 0:
+                        print "ELEM: ", sub_elem, row_index, col_index
+                        matrix[row_index+sub_elem-1][col_index+sub_elem-1] = 0
             # there is already an element in this space
             if elem != 0:
                 print "elem: ", elem
@@ -154,7 +151,7 @@ def add_original_puzzle(puzzle, matrix):
                 # starting_row += matrix_row_index
                 print "STARTING ROW: ", matrix_row_index, matrix_col_index
 
-                for index in range(9):
+                for index in range(board_size):
                     print index, " ", index_elem
                     x = matrix_row_index + index
                     y = matrix_col_index + index
@@ -177,12 +174,13 @@ def add_original_puzzle(puzzle, matrix):
 
                 # adjust cell constraints
 
-            matrix_row_index += 9
-        matrix_col_index += 9
-        if matrix_row_index == 324 or matrix_col_index == 324:
-            break
+            matrix_row_index += board_size
+            starting_row += board_size
+        matrix_col_index += board_size
+        # if matrix_row_index == 324 or matrix_col_index == 324:
+        #     break
         # matrix_row_index += 81
-        starting_row += 9
+        # starting_row += board_size
     return matrix
 
 def puzzleSpecific(matrix, puzzle):
@@ -245,17 +243,25 @@ if __name__ == '__main__':
                          [0,8,0,0,2,9,0,0,7],
                          [6,7,0,0,0,0,2,9,0],
                          [0,0,0,4,0,0,6,1,0]])
-    universe = [1,2,3,4,5,6,7,8,9]
+    small_puzzle = np.array([[3, 0, 4, 2],
+                            [0, 0, 0, 0],
+                            [0, 0, 0, 0],
+                            [2, 0, 0, 3]])
+    small_puzzle_answer = np.array([[3, 1, 4, 2],
+                                    [4, 2, 3, 1],
+                                    [1, 3, 2, 4],
+                                    [2, 4, 1, 3]])
+
     base_matrix = base_sudoku_grid()
     # print len(base_matrix)
     # print len(base_matrix[0])
     # print base_matrix[486][216]
     # complete_matrix = puzzleSpecific(base_matrix, ny_times_puzzle)
-    # complete_matrix = add_original_puzzle(ny_times_puzzle, base_matrix)
+    complete_matrix = add_original_puzzle(small_puzzle, base_matrix)
     # for row in range(324):
-    #     print row, complete_matrix[row][0:45]
+    #     print row, base_matrix[row][243:300]
     for row in range(64):
-        print row, base_matrix[row][48:]
+        print row, complete_matrix[row][0:16]
 
     # print(complete_matrix[0][0:9])
     # ny_times_matrix = get_matrix(ny_times_puzzle, universe)
