@@ -85,9 +85,6 @@ def naked_subset(puzzle):
             if type(puzzle[row][col]) is not int:
                 # find naked subsets and delete its integers from rest of row
                 row_poss = [i for i in range(len(puzzle[row])) if type(puzzle[row][i]) is not int and set(puzzle[row][i]) == set(puzzle[row][col])]
-                # print("Current box", row, col)
-                # print("Contents:", puzzle[row][col])
-                # print("Possibilities", row_poss)
                 if len(row_poss) == len(puzzle[row][col]):
                     delete = [j for j in range(len(puzzle)) if j not in row_poss and type(puzzle[row][j]) is not int]
                     for elem in delete:
@@ -95,10 +92,7 @@ def naked_subset(puzzle):
                             if digit in puzzle[row][elem]:
                                 puzzle[row][elem].remove(digit)
                 # find naked subsets and delete its integers from rest of column
-                col_poss = [i for i in range(len(puzzle)) if type(puzzle[i][col]) is not int and set(puzzle[i][col]) == set(puzzle[row][col])]
-                # print("Current box", row, col)
-                # print("Contents:", puzzle[row][col])
-                # print("Possibilities", col_poss)                
+                col_poss = [i for i in range(len(puzzle)) if type(puzzle[i][col]) is not int and set(puzzle[i][col]) == set(puzzle[row][col])]           
                 if len(col_poss) == len(puzzle[row][col]):
                     delete = [j for j in range(len(puzzle)) if j not in col_poss and type(puzzle[j][col]) is not int]
                     for elem in delete:
@@ -115,8 +109,6 @@ def naked_singles(puzzle):
             #have entered the box level
             for digit in range(1, len(puzzle) + 1):
                 if digit not in check_box(puzzle, [i*box_size, j*box_size]):
-                    # row_count = [k for k in range(i*box_size, (i+1)*box_size) if digit not in check_row(puzzle, [k,0])]
-                    # col_count = [l for l in range(j*box_size, (j+1)*box_size) if digit not in check_col(puzzle, [0,l])]
                     # we want every row and col that this digit could realistically be in
                         # ergo, it must be an entry in that column
                     row_count = []
@@ -135,9 +127,6 @@ def naked_singles(puzzle):
                                 fits = True
                         if fits:
                             col_count.append(col)
-                    
-                    # print("Box",i,j)
-                    # print(digit, row_count, col_count)
                     if len(row_count) == 1:
                         row = row_count[0]
                         for col in range(len(puzzle)):
@@ -233,23 +222,3 @@ if __name__ == '__main__':
     version = np_puzzle(manually_solve(puzzle))
     print(version)
     print(check_completion(version))
-
-
-    # current_medium = [[0,0,9,3,8,5,4,6,1],
-    #                   [0,6,0,9,1,7,0,8,0],
-    #                   [0,1,0,4,6,2,0,9,7],
-    #                   [0,8,2,5,0,0,7,1,0],
-    #                   [0,3,7,1,0,0,0,0,0],
-    #                   [1,9,5,7,0,8,0,4,6],
-    #                   [0,5,0,6,9,3,0,7,4],
-    #                   [0,0,0,8,5,4,0,0,0],
-    #                   [0,4,0,2,7,1,6,0,0]]
-    # for i in range(9):
-    #     for j in range(9):
-    #         if current_medium[i][j] == 0:
-    #             current_medium = sole_candidate(current_medium, [i,j])
-    # print(np_puzzle(current_medium))
-    # naked = final_sweep(naked_subset(current_medium))
-    # for row in naked:
-    #     for elem in row:
-    #         print(elem)
