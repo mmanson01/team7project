@@ -137,8 +137,6 @@ def puzzleSpecific(matrix, puzzle):
                 # adjust col constraints
                 for index in range(board_size):
                     x = matrix_row_index + index
-                    i = list(row).index(elem)
-                    j = matrix_col_index * list(row).index(elem)
                     y = col_starting_column + index + (board_size * list(row).index(elem))
                     if index != index_elem:
                         if (x,y) not in already_changed:
@@ -146,9 +144,9 @@ def puzzleSpecific(matrix, puzzle):
                     else:
                         matrix[x][y] = 1
                         already_changed.append((x,y))
-                for i in range(board_size ** 3):
-                    print(matrix[i][col_starting_column:col_starting_column + board_size**2])
-                print("hi")
+                #for i in range(board_size ** 3):
+                #    print(matrix[i][col_starting_column:col_starting_column + board_size**2])
+                #print("hi")
                 # adjust block constraints
                 for index in range(board_size):
                     x = matrix_row_index + index
@@ -177,7 +175,7 @@ def puzzleSpecific(matrix, puzzle):
             matrix_row_index += board_size
             starting_row += board_size
             cell_starting_column += 1
-            matrix_col_index += board_size
+        matrix_col_index += board_size
         # if matrix_row_index == 324 or matrix_col_index == 324:
         #     break
         # matrix_row_index += 81
