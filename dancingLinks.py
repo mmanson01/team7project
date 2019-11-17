@@ -144,13 +144,16 @@ def puzzleSpecific(matrix, puzzle):
                     else:
                         matrix[x][y] = 1
                         already_changed.append((x,y))
-                #for i in range(board_size ** 3):
-                #    print(matrix[i][col_starting_column:col_starting_column + board_size**2])
-                #print("hi")
+                
                 # adjust block constraints
                 for index in range(board_size):
                     x = matrix_row_index + index
-                    y = block_starting_column + index
+                    rootSize = np.sqrt(board_size)
+                    rowIndent = int(((matrix_col_index / board_size) // rootSize) * rootSize)
+                    puzzleCol = list(row).index(elem)
+                    colIndent = int(puzzleCol // rootSize)
+                    blockIndent = board_size * (rowIndent + colIndent)
+                    y = block_starting_column + index + blockIndent
                     if index != index_elem:
                         if (x,y) not in already_changed:
                             matrix[x][y] = 0
