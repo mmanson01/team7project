@@ -7,7 +7,11 @@ Created on Sat Oct 19 12:17:25 2019
 
 import numpy as np
 
+<<<<<<< HEAD
 if __name__ == '__main__':
+=======
+def get_puzzles():
+>>>>>>> 321aa779ef649a46a1c10d50c26880e10c3be25e
     sudoku = "sudoku.csv"
     quizzes = np.zeros((1000000, 81), np.int32)
     solutions = np.zeros((1000000, 81), np.int32)
@@ -18,4 +22,9 @@ if __name__ == '__main__':
             quizzes[i, j] = q
             solutions[i, j] = s
     quizzes = quizzes.reshape((-1, 9, 9))
+<<<<<<< HEAD
     solutions = solutions.reshape((-1, 9, 9))
+=======
+    solutions = solutions.reshape((-1, 9, 9))
+    return quizzes, solutions
+>>>>>>> 321aa779ef649a46a1c10d50c26880e10c3be25e

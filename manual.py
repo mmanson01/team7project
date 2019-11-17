@@ -146,6 +146,10 @@ def manually_solve(puzzle):
     """Compilation of techniques to run until puzzle is complete"""
     added_on = True
     count = 0
+<<<<<<< HEAD
+=======
+    puzzle = puzzle.tolist()
+>>>>>>> 321aa779ef649a46a1c10d50c26880e10c3be25e
     while added_on:
         orig_puzzle = np.copy(np_puzzle(puzzle))
         puzzle = sole_candidate(puzzle) 
@@ -158,9 +162,16 @@ def manually_solve(puzzle):
         count += 1
         
     #applies backtracking algorithm to unsolved puzzles
+<<<<<<< HEAD
     unsolved = np_puzzle(puzzle)
     if (not (check_completion(unsolved) == 0)):
         solve(unsolved, 9)
+=======
+    size = len(puzzle)
+    unsolved = np_puzzle(puzzle)
+    if (not (check_completion(unsolved) == 0)):
+        solve(unsolved, size)
+>>>>>>> 321aa779ef649a46a1c10d50c26880e10c3be25e
         return unsolved
         
     #returns solved puzzle
@@ -172,6 +183,7 @@ def check_completion(puzzle):
     for row in puzzle:
         zeroes += np.sum(row==0)
     return zeroes
+<<<<<<< HEAD
 
 if __name__ == '__main__':
     # ny_times_correct = [[2,3,4,9,5,6,7,8,1],
@@ -235,3 +247,5 @@ if __name__ == '__main__':
     print(version)    
     print (test_correctness(version, 9))
     print(check_completion(version))
+=======
+>>>>>>> 321aa779ef649a46a1c10d50c26880e10c3be25e

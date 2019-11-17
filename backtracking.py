@@ -19,7 +19,11 @@ location = (0,0)
 def print_grid(grid, n): 
     for i in range(n): 
         for j in range(n): 
+<<<<<<< HEAD
             print grid[i][j], 
+=======
+            print(grid[i][j])
+>>>>>>> 321aa779ef649a46a1c10d50c26880e10c3be25e
         print ('')
         
 def empty(grid, n):
@@ -78,7 +82,11 @@ if __name__ == "__main__":
 
      solve(problem, 9)
      print_grid(problem, 9)
+<<<<<<< HEAD
      print test_correctness(problem,9)
+=======
+     print(test_correctness(problem,9))
+>>>>>>> 321aa779ef649a46a1c10d50c26880e10c3be25e
      
      problem2 = np.array([[4,3,0,0],
                           [1,2,3,0],
@@ -87,7 +95,11 @@ if __name__ == "__main__":
     
      solve(problem2, 4)
      print_grid(problem2, 4)
+<<<<<<< HEAD
      print test_correctness(problem2,4)
+=======
+     print(test_correctness(problem2,4))
+>>>>>>> 321aa779ef649a46a1c10d50c26880e10c3be25e
      
      hardproblem = np.array([[0,0,0,6,0,3,0,0,7],
               [3,0,0,0,0,2,9,0,0],
@@ -102,7 +114,11 @@ if __name__ == "__main__":
      
      solve(hardproblem, 9)
      print_grid(hardproblem, 9)
+<<<<<<< HEAD
      print test_correctness(hardproblem, 9)
+=======
+     print(test_correctness(hardproblem, 9))
+>>>>>>> 321aa779ef649a46a1c10d50c26880e10c3be25e
                                              
      solution = np.array([[4,3,5,2,6,9,7,8,1],
                          [6,8,2,5,7,1,4,9,3],
