@@ -19,3 +19,4 @@ if __name__ == '__main__':
             solutions[i, j] = s
     quizzes = quizzes.reshape((-1, 9, 9))
     solutions = solutions.reshape((-1, 9, 9))
+    print(quizzes[0])
