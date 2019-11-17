@@ -5,6 +5,7 @@ import numpy as np
 import math
 
 from tester import test_correctness
+from backtracking import solve
 
 def check_row(puzzle, box):
     """Returns all elements in the given row"""
@@ -155,9 +156,16 @@ def manually_solve(puzzle):
         if np.array_equal(orig_puzzle, np_puzzle(puzzle)):
             added_on = False
         count += 1
-    # if manual can't fully solve the puzzle, finish with backtracking
-    
-    return puzzle
+        
+    #applies backtracking algorithm to unsolved puzzles
+    unsolved = np_puzzle(puzzle)
+    if (not (check_completion(unsolved) == 0)):
+        solve(unsolved, 9)
+        return unsolved
+        
+    #returns solved puzzle
+    return np_puzzle(puzzle)
+   
 
 def check_completion(puzzle):
     zeroes = 0
@@ -221,6 +229,9 @@ if __name__ == '__main__':
               [0,0,0,0,2,1,0,0,4],
               [0,0,4,9,0,0,0,0,1],
               [8,0,0,5,0,6,0,0,0]]
-    version = np_puzzle(manually_solve(puzzle))
-    print(version)
+              
+    version = manually_solve(puzzle)
+    
+    print(version)    
+    print (test_correctness(version, 9))
     print(check_completion(version))
