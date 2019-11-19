@@ -146,6 +146,7 @@ def manually_solve(puzzle):
     """Compilation of techniques to run until puzzle is complete"""
     added_on = True
     count = 0
+    puzzle = puzzle.tolist()
     while added_on:
         orig_puzzle = np.copy(np_puzzle(puzzle))
         puzzle = sole_candidate(puzzle) 
@@ -172,67 +173,3 @@ def check_completion(puzzle):
     for row in puzzle:
         zeroes += np.sum(row==0)
     return zeroes
-
-if __name__ == '__main__':
-    # ny_times_correct = [[2,3,4,9,5,6,7,8,1],
-    #                      [8,6,5,2,1,7,4,3,9],
-    #                      [7,1,9,8,3,4,5,6,2],
-    #                      [3,2,8,7,9,5,1,4,6],
-    #                      [1,4,7,3,6,8,9,2,5],
-    #                      [9,5,6,1,4,2,8,7,3],
-    #                      [4,8,1,6,2,9,3,5,7],
-    #                      [6,7,3,5,8,1,2,9,4],
-    #                      [5,9,2,4,7,3,6,1,8]]
-    # ny_times_puzzle = [[0,3,4,9,5,6,0,8,0],
-    #                      [8,6,5,0,0,7,0,3,9],
-    #                      [0,0,9,0,3,0,0,0,2],
-    #                      [3,0,0,7,0,5,1,4,0],
-    #                      [1,0,0,3,0,8,0,0,5],
-    #                      [9,0,6,1,0,0,0,0,0],
-    #                      [0,8,0,0,2,9,0,0,7],
-    #                      [6,7,0,0,0,0,2,9,0],
-    #                      [0,0,0,4,0,0,6,1,0]]
-    # our_solution = manually_solve(ny_times_puzzle)
-    # print(np.array_equal(our_solution,ny_times_correct))
-
-    # #medium puzzle
-    # medium = [
-    #     [0,0,9,0,0,0,4,0,0],
-    #     [0,0,0,0,1,7,0,8,0],
-    #     [0,0,0,0,0,2,0,9,7],
-    #     [0,8,2,5,0,0,0,0,0],
-    #     [0,3,7,0,0,0,0,0,0],
-    #     [1,0,0,0,0,0,0,4,6],
-    #     [0,5,0,6,9,3,0,7,0],
-    #     [0,0,0,8,0,0,0,0,0],
-    #     [0,0,0,0,7,0,6,0,0]
-    # ]
-    # medium_manual = manually_solve(medium)
-    # print(np_puzzle(medium_manual))
-    # for row in medium_manual:
-    #     for elem in row:
-    #         print(elem)
-    
-
-    # medium_manual = np_puzzle(medium_manual)
-    # print(medium_manual)
-    # print(check_completion(medium_manual))
-    # print(test_correctness(medium_manual,9))
-
-    # #sammy's puzzle
-    puzzle = [[0,0,0,6,0,3,0,0,7],
-              [3,0,0,0,0,2,9,0,0],
-              [6,0,0,1,7,0,0,0,0],
-              [4,0,2,0,9,0,0,1,6],
-              [0,0,7,0,0,0,4,0,0],
-              [9,6,0,0,1,0,2,0,5],
-              [0,0,0,0,2,1,0,0,4],
-              [0,0,4,9,0,0,0,0,1],
-              [8,0,0,5,0,6,0,0,0]]
-              
-    version = manually_solve(puzzle)
-    
-    print(version)    
-    print (test_correctness(version, 9))
-    print(check_completion(version))
-
