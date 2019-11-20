@@ -3,6 +3,7 @@ Test different algorithms' run times.
 """
 import time
 import random
+import numpy as np
 
 from manual import manually_solve
 from backtracking import solve 
@@ -30,10 +31,10 @@ def back_time(puzzle):
 
 
 if __name__ == '__main__':
-    lil_puzzle = [[4,3,0,0],
+    lil_puzzle = np.array([[4,3,0,0],
                 [1,2,3,0],
                 [0,0,2,0],
-                [2,1,0,0]]
+                [2,1,0,0]])
     # easy_puzzle = [[0,3,4,9,5,6,0,8,0],
     #                      [8,6,5,0,0,7,0,3,9],
     #                      [0,0,9,0,3,0,0,0,2],
@@ -65,19 +66,19 @@ if __name__ == '__main__':
 
     # print("Brute Force takes: {}".format(brute_time(lil_puzzle)))
     print("Easy Puzzle:")
-    print("Backtracking takes: {}".format(back_time(easy_puzzle)))
-    print("Manual takes: {}".format(manual_time(easy_puzzle)))
+    print("Backtracking takes: {}".format(back_time(lil_puzzle)))
+    print("Manual takes: {}".format(manual_time(lil_puzzle)))
     print()
 
-    print("Hard Puzzle:")
-    print("Backtracking takes: {}".format(back_time(hard_puzzle)))
-    print("Manual takes: {}".format(manual_time(hard_puzzle)))
-    print()
+    # print("Hard Puzzle:")
+    # print("Backtracking takes: {}".format(back_time(hard_puzzle)))
+    # print("Manual takes: {}".format(manual_time(hard_puzzle)))
+    # print()
 
-    print("Hard Puzzle 2:")
-    print("Backtracking takes: {}".format(back_time(hard2_puzzle)))
-    print("Manual takes: {}".format(manual_time(hard2_puzzle)))
-    print()
+    # print("Hard Puzzle 2:")
+    # print("Backtracking takes: {}".format(back_time(hard2_puzzle)))
+    # print("Manual takes: {}".format(manual_time(hard2_puzzle)))
+    # print()
 
 
     quizzes, solutions = get_puzzles()

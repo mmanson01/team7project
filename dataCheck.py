@@ -20,3 +20,14 @@ def get_puzzles():
     quizzes = quizzes.reshape((-1, 9, 9))
     solutions = solutions.reshape((-1, 9, 9))
     return quizzes, solutions
+
+def get_4_puzzles():
+    return (
+        [
+            np.array([[3,2,1,4],[4,1,2,3],[1,4,3,2],[2,3,4,1]]),
+            np.array([[4,1,2,3],[2,3,4,1], [3,4,1,2], [1,2,3,4]]),
+            np.array([[2,3,4,1], [4,1,2,3],[3,4,1,2], [1,2,3,4]]),
+            np.array([[1,3,4,2], [4,2,1,3], [3,1,2,4], [2,4,3,1]]),
+            np.array([[3,1,4,2], [4,2,3,1], [2,4,1,3], [1,3,2,4]])
+        ]
+    )
