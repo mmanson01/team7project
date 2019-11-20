@@ -1,14 +1,4 @@
 #!/usr/bin/env python
-# algorithm x solution
-# if matrix A has no columns, current partial solution is valid solution. terminate.
-# else: choose a column c (deterministiaclly)
-# choose a row r such that A(r,c)=1 (nondeterministically)
-# include row r in the partial solution
-# for each column j such that A(r,j)=1
-    # for each row i such that A(i,j)=1
-        #delete row i from matrix A
-    # delete column j from matrix A
-# repeat alg recrusively on reduced matrix A
 
 import numpy as np
 import math
@@ -128,7 +118,9 @@ def add_original_puzzle(puzzle, matrix):
     matrix_row_index = 0
     matrix_col_index = 0
     starting_row = 0
+    col_starting_column = (board_size ** 2)
     cell_starting_column = (board_size**2) * 3
+    block_starting_column = (board_size**2) * 2
     for row in puzzle:
         elems_in_row = set(row)
         # part of row constraint
@@ -158,9 +150,32 @@ def add_original_puzzle(puzzle, matrix):
                         already_changed.append((x,y))
 
                 # adjust col constraints
-
+                for index in range(board_size):
+                    x = matrix_row_index + index
+                    y = col_starting_column + index + (board_size * list(row).index(elem))
+                    if index != index_elem:
+                        if (x,y) not in already_changed:
+                            matrix[x][y] = 0
+                    else:
+                        matrix[x][y] = 1
+                        already_changed.append((x,y))
 
                 # adjust block constraints
+                for index in range(board_size):
+                    x = matrix_row_index + index
+                    rootSize = np.sqrt(board_size)
+                    rowIndent = int(((matrix_col_index / board_size) // rootSize) * rootSize)
+                    puzzleCol = list(row).index(elem)
+                    colIndent = int(puzzleCol // rootSize)
+                    blockIndent = board_size * (rowIndent + colIndent)
+                    y = block_starting_column + index + blockIndent
+                    if index != index_elem:
+                        if (x,y) not in already_changed:
+                            matrix[x][y] = 0
+                    else:
+                        matrix[x][y] = 1
+                        already_changed.append((x,y))
+
 
                 # adjust cell constraints
                 for index in range(board_size):
@@ -180,11 +195,54 @@ def add_original_puzzle(puzzle, matrix):
             starting_row += board_size
             cell_starting_column += 1
         matrix_col_index += board_size
-        # if matrix_row_index == 324 or matrix_col_index == 324:
-        #     break
-        # matrix_row_index += 81
-        # starting_row += board_size
     return matrix
+
+def solve(matrix, partial_solution):
+    # algorithm x solution
+    # if matrix A has no columns, current partial solution is valid solution. terminate.
+    # else: choose a column c (deterministiaclly)
+    # choose a row r such that A(r,c)=1 (nondeterministically)
+    # include row r in the partial solution
+    # for each column j such that A(r,j)=1
+        # for each row i such that A(i,j)=1
+            #delete row i from matrix A
+        # delete column j from matrix A
+    # repeat alg recrusively on reduced matrix A
+    if len(matrix) == 0:
+        return partial_solution
+    else:
+        # numpy_matrix = np.array(matrix)
+        # get first column of the matrix
+        # c = matrix[:,0]
+        col_index = 0
+        for row in matrix:
+            # find the first row in the column were elem==1
+            if row[col_index] == 1:
+                # include row r in the partial solution
+                np.insert(partial_solution, 0, row)
+                matrix = cover_row(matrix, row)
+                return solve(matrix, partial_solution)
+
+def cover_row(matrix, row):
+    col_index = 0
+    for col in row:
+        # for each col such that M[row][col] == 1
+        if col == 1:
+            row_index = 0
+            for rowL in matrix:
+                # for each rowL such that M[rowL][col] == 1
+                if rowL[col] == 1:
+                    # delete rowL from matrix
+                    np.delete(matrix, row_index, axis=0)
+
+                row_index += 1
+            # delete col from matrix
+            np.delete(matrix, col_index, axis=1)
+        col_index += 1
+    return matrix
+
+
+
 
 
 if __name__ == '__main__':
@@ -221,10 +279,13 @@ if __name__ == '__main__':
     # print base_matrix[486][216]
     # complete_matrix = puzzleSpecific(base_matrix, ny_times_puzzle)
     complete_matrix = add_original_puzzle(small_puzzle, base_matrix)
+    numpy_complete_matrix = np.array(complete_matrix)
+    partial_solution = np.array([])
     # for row in range(324):
     #     print row, base_matrix[row][243:300]
-    for row in range(64):
-        print row, complete_matrix[row][48:64]
+    # for row in range(64):
+    #     print row, complete_matrix[row][32:48]
+    print solve(numpy_complete_matrix, partial_solution)
 
     # print(complete_matrix[0][0:9])
     # ny_times_matrix = get_matrix(ny_times_puzzle, universe)
