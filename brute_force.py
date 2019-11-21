@@ -8,6 +8,7 @@ import numpy as np
 def brute_force(p,n):
     solved = False
     k = 0
+    p = p.tolist()
     while not solved:
         # print(k)
         k += 1
@@ -20,4 +21,5 @@ def brute_force(p,n):
             solved=True
         else:
             p = np.copy(orig_puzzle)
+    print(k)
     return p, k
