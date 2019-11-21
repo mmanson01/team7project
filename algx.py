@@ -121,10 +121,24 @@ def add_original_puzzle(puzzle, matrix):
     col_starting_column = (board_size ** 2)
     cell_starting_column = (board_size**2) * 3
     block_starting_column = (board_size**2) * 2
+    row_index_forced = 0
     for row in puzzle:
+        col_index_overall = 0
         elems_in_row = set(row)
         # part of row constraint
+        elem_index = 0
         for elem in row:
+            elems_in_col = set(puzzle[:,col_index_overall])
+            end_of_block_col = int(elem_index + math.sqrt(board_size) - (elem_index%math.sqrt(board_size)))
+            end_of_block_row = int(row_index_forced + math.sqrt(board_size) - (row_index_forced%math.sqrt(board_size)))
+            # print "ENDO OF BLOCK: ", elem_index, row_index_forced, end_of_block_row
+            if elem_index%math.sqrt(board_size) == 0:
+                if row_index_forced%math.sqrt(board_size) != 0:
+                    temp_row_index = row_index_forced - 1
+                else:
+                    temp_row_index = row_index_forced
+                elems_in_block = np.unique(puzzle[temp_row_index:end_of_block_row, elem_index:end_of_block_col])
+            print elems_in_block
             # no element, but mark the other elems in the row as  0
             if elem == 0:
                 row_index = starting_row
@@ -132,6 +146,22 @@ def add_original_puzzle(puzzle, matrix):
                 for sub_elem in elems_in_row:
                     if sub_elem != 0:
                         matrix[row_index+sub_elem-1][col_index+sub_elem-1] = 0
+                for sub_elem in elems_in_block:
+                    if sub_elem != 0:
+                        x = starting_row + sub_elem - 1
+                        rootSize = np.sqrt(board_size)
+                        rowIndent = int(((matrix_col_index / board_size) // rootSize) * rootSize)
+                        puzzleCol = elem_index
+                        colIndent = int(puzzleCol // rootSize)
+                        blockIndent = board_size * (rowIndent + colIndent)
+                        y = block_starting_column + sub_elem + blockIndent - 1
+                        matrix[x][y] = 0
+                # # no element, but mark the other elems in the col as 0
+                # for sub_elem in elems_in_col:
+                #     c_index = col_starting_column + (elem_index*board_size)
+                #     if sub_elem != 0:
+                #         matrix[row_index+sub_elem-1][c_index+sub_elem-1] = 0
+
             # there is already an element in this space
             if elem != 0:
                 # index for elem to keep 1 is elem - 1
@@ -159,6 +189,11 @@ def add_original_puzzle(puzzle, matrix):
                     else:
                         matrix[x][y] = 1
                         already_changed.append((x,y))
+                for i in range(board_size):
+                    x = (i * (board_size ** 2)) + index_elem + (board_size * list(row).index(elem))
+                    y = col_starting_column + index_elem + (board_size * list(row).index(elem))
+                    if x != (matrix_row_index + index_elem):
+                        matrix[x][y] = 0
 
                 # adjust block constraints
                 for index in range(board_size):
@@ -194,7 +229,9 @@ def add_original_puzzle(puzzle, matrix):
             matrix_row_index += board_size
             starting_row += board_size
             cell_starting_column += 1
+            elem_index += 1
         matrix_col_index += board_size
+        row_index_forced += 1
     return matrix
 
 def solve(matrix, partial_solution):
@@ -283,9 +320,9 @@ if __name__ == '__main__':
     partial_solution = np.array([])
     # for row in range(324):
     #     print row, base_matrix[row][243:300]
-    # for row in range(64):
-    #     print row, complete_matrix[row][32:48]
-    print solve(numpy_complete_matrix, partial_solution)
+    for row in range(64):
+        print row, complete_matrix[row][32:48]
+    # print solve(numpy_complete_matrix, partial_solution)
 
     # print(complete_matrix[0][0:9])
     # ny_times_matrix = get_matrix(ny_times_puzzle, universe)
