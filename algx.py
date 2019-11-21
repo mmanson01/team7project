@@ -138,7 +138,7 @@ def add_original_puzzle(puzzle, matrix):
                 else:
                     temp_row_index = row_index_forced
                 elems_in_block = np.unique(puzzle[temp_row_index:end_of_block_row, elem_index:end_of_block_col])
-            print elems_in_block
+
             # no element, but mark the other elems in the row as  0
             if elem == 0:
                 row_index = starting_row
@@ -245,37 +245,66 @@ def solve(matrix, partial_solution):
             #delete row i from matrix A
         # delete column j from matrix A
     # repeat alg recrusively on reduced matrix A
+    # print "LENGTH", len(matrix)
+    print "BEGINNING FUNCTION", len(matrix)
     if len(matrix) == 0:
+        print "EXIT"
         return partial_solution
     else:
         # numpy_matrix = np.array(matrix)
         # get first column of the matrix
         # c = matrix[:,0]
+        print "ELSE"
         col_index = 0
+        # find column with min 1s
+        min_ones_index = 0
+        count_ones = 0
+        for col in range(len(matrix[0])):
+            if np.count_nonzero(matrix[:,col]) > 0:
+                mins_ones_index = col
+                break
+        # one_count_per_col = np.count_nonzero(matrix[:,0])
+        # print one_count_per_col
+        # count = np.ma.size(matrix, axis=0)
+        # print count
+
         for row in matrix:
             # find the first row in the column were elem==1
-            if row[col_index] == 1:
+            # print matrix
+            # while row[col_index] != 1:
+            #     col_index += 1
+            if row[mins_ones_index] == 1:
                 # include row r in the partial solution
-                np.insert(partial_solution, 0, row)
-                matrix = cover_row(matrix, row)
-                return solve(matrix, partial_solution)
+                print "BEFORE INSERT", len(partial_solution)
+                partial_solution = np.vstack([partial_solution, row])
+                # partial_solution = np.append(partial_solution, row, axis=0)
+                print "AFTER INSERT", partial_solution
+                new_matrix = cover_row(matrix, row)
+                # return new_matrix
+                solve(new_matrix, partial_solution)
 
 def cover_row(matrix, row):
     col_index = 0
+    print "BEFORE COVER LENGTH", len(matrix)
     for col in row:
         # for each col such that M[row][col] == 1
         if col == 1:
+            # print "col == 1 "
             row_index = 0
             for rowL in matrix:
                 # for each rowL such that M[rowL][col] == 1
                 if rowL[col] == 1:
+                    # print "should delete row "
                     # delete rowL from matrix
-                    np.delete(matrix, row_index, axis=0)
+                    matrix = np.delete(matrix, row_index, axis=0)
 
                 row_index += 1
             # delete col from matrix
-            np.delete(matrix, col_index, axis=1)
+            # print "delete col"
+
+            matrix = np.delete(matrix, col_index, axis=1)
         col_index += 1
+    print "COVER LENGTH", len(matrix)
     return matrix
 
 
@@ -317,12 +346,15 @@ if __name__ == '__main__':
     # complete_matrix = puzzleSpecific(base_matrix, ny_times_puzzle)
     complete_matrix = add_original_puzzle(small_puzzle, base_matrix)
     numpy_complete_matrix = np.array(complete_matrix)
-    partial_solution = np.array([])
+    first_row = []
+    for cols in range(board_cols):
+        first_row.append(-1)
+    partial_solution = np.array(first_row)
     # for row in range(324):
     #     print row, base_matrix[row][243:300]
-    for row in range(64):
-        print row, complete_matrix[row][32:48]
-    # print solve(numpy_complete_matrix, partial_solution)
+    # for row in range(64):
+    #     print row, complete_matrix[row][32:48]
+    print solve(numpy_complete_matrix, partial_solution)
 
     # print(complete_matrix[0][0:9])
     # ny_times_matrix = get_matrix(ny_times_puzzle, universe)
