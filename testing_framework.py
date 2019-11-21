@@ -31,21 +31,21 @@ def back_time(puzzle):
 
 
 if __name__ == '__main__':
-    ## Test 4x4 Puzzles ##
-    puzzles = get_4_puzzles()
-    back = 0
-    brute = 0
-    manual = 0
+    # ## Test 4x4 Puzzles ##
+    # puzzles = get_4_puzzles()
+    # back = 0
+    # brute = 0
+    # manual = 0
 
-    for p in puzzles:
-        back += back_time(p)
-        brute += brute_time(p)
-        manual += manual_time(p)
+    # for p in puzzles:
+    #     brute += brute_time(p)
+    #     # back += back_time(p)
+    #     # manual += manual_time(p)
 
-    print("Testing 4x4 Puzzle Efficiencies for 10 puzzles:")
-    print("Brute Force: {}".format(brute))
-    print("Backtracking: {}".format(back))
-    print("Manual: {}".format(manual))
+    # print("Testing 4x4 Puzzle Efficiencies for 10 puzzles:")
+    # print("Brute Force: {}".format(brute))
+    # print("Backtracking: {}".format(back))
+    # print("Manual: {}".format(manual))
 
     ## Test 9x9 Puzzles ##
     quizzes, solutions = get_puzzles()
@@ -57,7 +57,7 @@ if __name__ == '__main__':
     for s in sample:
         puz = quizzes[s]
         back += back_time(puz)
-        manual += manual_time(puz)
+        # manual += manual_time(puz)
     
     print("Testing 9x9 Puzzle Efficiencies for 1000 puzzles:")
     print ("Backtracking: {}".format(back))

@@ -161,13 +161,12 @@ def manually_solve(puzzle):
     #applies backtracking algorithm to unsolved puzzles
     unsolved = np_puzzle(puzzle)
     if (not (check_completion(unsolved) == 0)):
-        solve(unsolved, 9)
+        solve(unsolved, len(puzzle))
         return unsolved
         
     #returns solved puzzle
     return np_puzzle(puzzle)
    
-
 def check_completion(puzzle):
     zeroes = 0
     for row in puzzle:
