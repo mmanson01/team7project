@@ -104,12 +104,26 @@ def puzzleSpecific(matrix, puzzle):
     matrix_col_index = 0
     starting_row = 0
     col_starting_column = (board_size ** 2)
-    block_starting_column = (board_size ** 2) * 2
     cell_starting_column = (board_size**2) * 3
+    block_starting_column = (board_size**2) * 2
+    row_index_forced = 0
     for row in puzzle:
+        col_index_overall = 0
         elems_in_row = set(row)
         # part of row constraint
+        elem_index = 0
         for elem in row:
+            elems_in_col = set(puzzle[:,col_index_overall])
+            end_of_block_col = int(elem_index + np.sqrt(board_size) - (elem_index%math.sqrt(board_size)))
+            end_of_block_row = int(row_index_forced + np.sqrt(board_size) - (row_index_forced%math.sqrt(board_size)))
+            # print "ENDO OF BLOCK: ", elem_index, row_index_forced, end_of_block_row
+            if elem_index%np.sqrt(board_size) == 0:
+                if row_index_forced%np.sqrt(board_size) != 0:
+                    temp_row_index = row_index_forced - 1
+                else:
+                    temp_row_index = row_index_forced
+                elems_in_block = np.unique(puzzle[temp_row_index:end_of_block_row, elem_index:end_of_block_col])
+
             # no element, but mark the other elems in the row as  0
             if elem == 0:
                 row_index = starting_row
@@ -117,6 +131,22 @@ def puzzleSpecific(matrix, puzzle):
                 for sub_elem in elems_in_row:
                     if sub_elem != 0:
                         matrix[row_index+sub_elem-1][col_index+sub_elem-1] = 0
+                for sub_elem in elems_in_block:
+                    if sub_elem != 0:
+                        x = starting_row + sub_elem - 1
+                        rootSize = np.sqrt(board_size)
+                        rowIndent = int(((matrix_col_index / board_size) // rootSize) * rootSize)
+                        puzzleCol = elem_index
+                        colIndent = int(puzzleCol // rootSize)
+                        blockIndent = board_size * (rowIndent + colIndent)
+                        y = block_starting_column + sub_elem + blockIndent - 1
+                        matrix[x][y] = 0
+                # # no element, but mark the other elems in the col as 0
+                # for sub_elem in elems_in_col:
+                #     c_index = col_starting_column + (elem_index*board_size)
+                #     if sub_elem != 0:
+                #         matrix[row_index+sub_elem-1][c_index+sub_elem-1] = 0
+
             # there is already an element in this space
             if elem != 0:
                 # index for elem to keep 1 is elem - 1
@@ -149,11 +179,7 @@ def puzzleSpecific(matrix, puzzle):
                     y = col_starting_column + index_elem + (board_size * list(row).index(elem))
                     if x != (matrix_row_index + index_elem):
                         matrix[x][y] = 0
-                    
-                for i in range(board_size ** 3):
-                    print(matrix[i][col_starting_column:col_starting_column + board_size**2])
-                print("hi")
-                
+
                 # adjust block constraints
                 for index in range(board_size):
                     x = matrix_row_index + index
@@ -169,6 +195,7 @@ def puzzleSpecific(matrix, puzzle):
                     else:
                         matrix[x][y] = 1
                         already_changed.append((x,y))
+
 
                 # adjust cell constraints
                 for index in range(board_size):
@@ -187,46 +214,19 @@ def puzzleSpecific(matrix, puzzle):
             matrix_row_index += board_size
             starting_row += board_size
             cell_starting_column += 1
+            elem_index += 1
         matrix_col_index += board_size
-        # if matrix_row_index == 324 or matrix_col_index == 324:
-        #     break
-        # matrix_row_index += 81
-        # starting_row += board_size
+        row_index_forced += 1
     return matrix
           
 
 
-def dancingLinks(puzzle, ourMat):
+def listGrid(puzzle, ourMat):
     dimension = len(puzzle[0])
-    
-    rows = len(ourMat[0])  #need to change this to ourMat's current dimensions
+    rows = len(ourMat[0])
     cols = len(ourMat)
     
-    minOnes = float("inf")
-    colLeastOnes = -1
-    #this following for loop is actually where things get
-    #super inefficient
-    #this is why knuth implements a "sparse matrix" and is
-    #our next big step after getting this alg running at all
-    for i in range(cols):
-        thisColOnes = 0
-        for j in range(rows):
-            if ourMat[j][i] == 1:
-                thisColOnes = thisColOnes + 1
-        if thisColOnes < minOnes:
-            minOnes = thisColOnes
-            colLeastOnes = i
-    oneRowsinCol = []
-    for i in range(rows):
-        if ourMat[i][colLeastOnes] == 1:
-            oneRowsinCol.append(i)
-    whichRow = np.random.randint(0, len(oneRowsinCol))
-    #this is where my understanding trails off for now
-    #but essentially you use the deterministic, lowest 1s
-    #column and the non-deterministic row that intersects
-    #with that column and holds a 1 to delete those rows
-    #and columns and recurse until you reach a final state
-    #space, will read more this weekend and finish this
+def colNode()
 
 if __name__ == '__main__':
     ny_times_correct = np.array([[2,3,4,9,5,6,7,8,1],
