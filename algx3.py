@@ -5,20 +5,6 @@ import math
 board_size = 4
 board_rows = board_size**3
 board_cols = (board_size**2)*4
-partial_solution = {}
-cover_row_dict = {}
-deleted_cols = {}
-main_matrix = []
-# board_size = 9
-# board_rows = board_size**3
-# board_cols = (board_size**2)*4
-
-# constraints:
-# 1) values 1-9 have to be in every row, column, box
-# 2) number can't repeat in row, column, or box
-# 3) every cell has to have a value
-# total of 324 contsratings (81*4) == columns
-# 729 rows in matrix (9^3)
 
 def base_sudoku_grid():
     matrix = []
@@ -238,148 +224,38 @@ def add_original_puzzle(puzzle, matrix):
         row_index_forced += 1
     return matrix
 
-def solve(matrix):
-    # algorithm x solution
-    # if matrix A has no columns, current partial solution is valid solution. terminate.
-    # else: choose a column c (deterministiaclly)
-    # choose a row r such that A(r,c)=1 (nondeterministically)
-    # include row r in the partial solution
-    # for each column j such that A(r,j)=1
-        # for each row i such that A(i,j)=1
-            #delete row i from matrix A
-        # delete column j from matrix A
-    # repeat alg recrusively on reduced matrix A
-    # print "LENGTH", len(matrix)
-    print "BEGINNING FUNCTION", len(matrix[0])
-    if len(matrix[0]) == 0:
-        print "EXIT 1"
-        return
+def solve(X, Y, solution=[]):
+    if not X:
+        yield list(solution)
+    else:
+        c = min(X, key=lambda c: len(X[c]))
+        for r in list(X[c]):
+            solution.append(r)
+            cols = select(X, Y, r)
+            for s in solve(X, Y, solution):
+                yield s
+            deselect(X, Y, r, cols)
+            solution.pop()
 
-    print "ELSE"
-    min_count = -1
-    # find column with min 1s
-    min_ones_index = -1
-    for col in range(len(matrix[0])):
-        one_count = np.count_nonzero(matrix[:,col])
-        if one_count < min_count or min_count==-1:
-            if one_count != 0 :
-                min_ones_index = col
-                min_count = np.count_nonzero(matrix[:,col])
-    if min_count == -1:
-        min_count = 0
-        min_ones_index = 0
-    print "MIN: ", min_count, min_ones_index
-    print matrix[:,0]
-    # if the column with the least 1's has no 1's, terminate
-    if min_count == 0:
-        print "EXIT 2"
-        # return partial_solution
-        return
-    row_index = 0
-    for row in matrix:
-        # find the first row in the column were elem==1
-        if row[min_ones_index] == 1:
-            # include row r in the partial solution
-            # partial_solution[row_index] = np.where(row == 1)[0]
-            partial_solution[row_index] = row
-            new_matrix = cover_row(matrix, row)
-            # return new_matrix
-            solve(new_matrix)
-            print "ROW INDEX", row_index
-            # print "LEN Matrix", len(matrix)
-            # remove row from solution
-            partial_solution.pop(row_index, None)
-            # uncover row
-            print "LEN", len(matrix[0])
-            print row
-            print matrix[row_index]
-            matrix = uncover_row(matrix, matrix[row_index])
-            print "HERE3"
-            # reset mins_ones_index
-        row_index += 1
-    # return partial_solution
+def select(X, Y, r):
+    cols = []
+    for j in Y[r]:
+        for i in X[j]:
+            for k in Y[i]:
+                if k != j:
+                    X[k].remove(i)
+        cols.append(X.pop(j))
+    return cols
 
-
-def cover_row(matrix, row):
-    col_index = 0
-    for col in row:
-        # for each col such that M[row][col] == 1
-        if col == 1:
-            row_index = 0
-            for rowL in matrix:
-                # for each rowL such that M[rowL][col] == 1
-                if rowL[col_index] == 1:
-                    # cover row...aka add to cover_row
-                    # cover_row_dict[row_index] = rowL
-                    if row_index not in cover_row_dict.keys():
-                        cover_row_dict[row_index] = []
-                    cover_row_dict[row_index].append(rowL)
-                    # delete rowL from matrix
-                    matrix = np.delete(matrix, row_index, axis=0)
-
-                else:
-                    row_index += 1
-            # delete col from matrix
-            if col_index not in deleted_cols.keys():
-                deleted_cols[col_index] = []
-            deleted_cols[col_index].append(matrix[:,col_index])
-            matrix = np.delete(matrix, col_index, axis=1)
-        col_index += 1
-    return matrix
-
-
-def uncover_row(matrix, row):
-    col_index = 0
-    for col in row:
-        # for each col such that M[row][col] == 1
-        if col == 1:
-            row_index = 0
-            for rowL in matrix:
-                # for each rowL such that M[rowL][col] == 1
-                if rowL[col_index] == 1:
-                    # add row back to matrix
-                    print "row_index", row_index
-                    print cover_row_dict[10]
-                    matrix = np.insert(matrix, row_index, cover_row_dict[row_index][-1], axis=0)
-                    # uncover the row...aka remove from cover_row
-                    cover_row_dict[row_index] = cover_row_dict[row_index][:-1]
-                    # cover_row_dict.pop(row_index, None)
-
-                else:
-                    row_index += 1
-            # add back col to matrix
-            print "MATRIX LEN: ", len(matrix)
-            print "COMPARE ", len(deleted_cols[col_index][-1])
-            zero_array = []
-            for num in range(len(matrix)):
-                zero_array.append(0)
-            matrix = np.insert(matrix, col_index, zero_array, axis=1)
-            # matrix = np.insert(matrix, col_index, deleted_cols[col_index][-1], axis=1)
-            deleted_cols.pop(col_index, None)
-        col_index += 1
-    return matrix
-
-
+def deselect(X, Y, r, cols):
+    for j in reversed(Y[r]):
+        X[j] = cols.pop()
+        for i in X[j]:
+            for k in Y[i]:
+                if k != j:
+                    X[k].add(i)
 
 if __name__ == '__main__':
-    ny_times_correct = np.array([[2,3,4,9,5,6,7,8,1],
-                         [8,6,5,2,1,7,4,3,9],
-                         [7,1,9,8,3,4,5,6,2],
-                         [3,2,8,7,9,5,1,4,6],
-                         [1,4,7,3,6,8,9,2,5],
-                         [9,5,6,1,4,2,8,7,3],
-                         [4,8,1,6,2,9,3,5,7],
-                         [6,7,3,5,8,1,2,9,4],
-                         [5,9,2,4,7,3,6,1,8]])
-    ny_times_puzzle = np.array([[0,3,4,9,5,6,0,8,0],
-                         [8,6,5,0,0,7,0,3,9],
-                         [0,0,9,0,3,0,0,0,2],
-                         [3,0,0,7,0,5,1,4,0],
-                         [1,0,0,3,0,8,0,0,5],
-                         [9,0,6,1,0,0,0,0,0],
-                         [0,8,0,0,2,9,0,0,7],
-                         [6,7,0,0,0,0,2,9,0],
-                         [0,0,0,4,0,0,6,1,0]])
     small_puzzle = np.array([[3, 0, 4, 2],
                             [0, 0, 0, 0],
                             [0, 0, 0, 0],
@@ -397,17 +273,24 @@ if __name__ == '__main__':
     # print base_matrix[486][216]
     # complete_matrix = puzzleSpecific(base_matrix, ny_times_puzzle)
     complete_matrix = add_original_puzzle(small_puzzle, base_matrix)
-    numpy_complete_matrix = np.array(complete_matrix)
-    # keep so we can add back columns and rows
-    main_matrix = numpy_complete_matrix
-    # first_row = []
-    # for cols in range(board_cols):
-    #     first_row.append(-1)
-    # partial_solution = np.array(first_row)
-    # partial_solution = {}
-    # for row in range(324):
-    #     print row, base_matrix[row][243:300]
-    # for row in range(64):
-    #     print row, complete_matrix[row][0:50]
-    solve(numpy_complete_matrix)
-    print partial_solution
+    X = []
+    # X is all of the row_indeces
+    for row in range(len(complete_matrix)):
+        X.append(row)
+    Y = {}
+    # Y[row] = col values
+    row_index = 0
+    for row in complete_matrix:
+        col_index = 0
+        for elem in row:
+            if row_index not in Y.keys():
+                Y[row_index] = []
+            Y[row_index].append(col_index)
+            col_index += 1
+        row_index += 1
+    X = {j: set() for j in X}
+    for i in Y:
+        for j in Y[i]:
+            X[j].add(i)
+
+    print solve(X,Y)
