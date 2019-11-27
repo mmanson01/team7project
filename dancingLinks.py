@@ -219,7 +219,68 @@ def puzzleSpecific(matrix, puzzle):
         row_index_forced += 1
     return matrix
           
-
+class dancingLink:
+    left = None
+    right = None
+    up = None
+    down = None
+    myCol = None
+    
+    def __init__(self):
+        left = self
+        right = self
+        up = self
+        down = self
+        
+    def __init__(self, column):
+        self()
+        self.myCol = column
+    
+    def hookDown(self, nextLink):
+        nextLink.down = self.down
+        nextLink.down.up = nextLink
+        nextLink.up = self
+        self.down = nextLink
+        return nextLink
+    
+    def hookRight(self, nextLink):
+        nextLink.right = self.right
+        nextLink.right.left = nextLink
+        nextLink.left = self
+        self.right = nextLink
+        return nextLink
+    
+    def separateLeftRight(self):
+        self.left.right = self.right
+        self.right.left = self.left
+    
+    def connectLeftRight(self):
+        self.left.right = self
+        self.right.left = self
+        
+    def separateUpDown(self):
+        self.up.down = self.down
+        self.down.up = self.up
+    
+    def connectUpDown(self):
+        self.up.down = self.self
+        self.down.up = self.self
+    
+class columnLink(dancingLink):
+    weight = None
+    contents = None
+    
+    def __init__(self, arr):
+        super()
+        self.weight = 0
+        self.contents = arr
+        myCol = self
+    
+    def cover(self):
+        self.separateLeftRight()
+        for()
+    
+    
 
 def listGrid(puzzle, ourMat):
     dimension = len(puzzle[0])
