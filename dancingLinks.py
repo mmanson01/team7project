@@ -1,5 +1,7 @@
 import numpy as np
 
+solution = []
+
 def buildMat(board_size, puzzle):
     matrix = []
     # set matrix size to be [size^3][size^2 * 4]
@@ -114,8 +116,8 @@ def puzzleSpecific(matrix, puzzle):
         elem_index = 0
         for elem in row:
             elems_in_col = set(puzzle[:,col_index_overall])
-            end_of_block_col = int(elem_index + np.sqrt(board_size) - (elem_index%math.sqrt(board_size)))
-            end_of_block_row = int(row_index_forced + np.sqrt(board_size) - (row_index_forced%math.sqrt(board_size)))
+            end_of_block_col = int(elem_index + np.sqrt(board_size) - (elem_index%np.sqrt(board_size)))
+            end_of_block_row = int(row_index_forced + np.sqrt(board_size) - (row_index_forced%np.sqrt(board_size)))
             # print "ENDO OF BLOCK: ", elem_index, row_index_forced, end_of_block_row
             if elem_index%np.sqrt(board_size) == 0:
                 if row_index_forced%np.sqrt(board_size) != 0:
@@ -226,15 +228,12 @@ class dancingLink:
     down = None
     myCol = None
     
-    def __init__(self):
-        left = self
-        right = self
-        up = self
-        down = self
-        
-    def __init__(self, column):
-        self()
-        self.myCol = column
+    def __init__(self, column = None):
+        self.left = self
+        self.right = self
+        self.up = self
+        self.down = self
+        self.myCol = column   
     
     def hookDown(self, nextLink):
         nextLink.down = self.down
@@ -263,31 +262,109 @@ class dancingLink:
         self.down.up = self.up
     
     def connectUpDown(self):
-        self.up.down = self.self
-        self.down.up = self.self
+        self.up.down = self
+        self.down.up = self
     
 class columnLink(dancingLink):
-    weight = None
-    contents = None
+    weight = 0
+    position = None
     
-    def __init__(self, arr):
-        super()
+    def __init__(self, pos):
+        super().__init__()
         self.weight = 0
-        self.contents = arr
-        myCol = self
+        self.contents = pos
+        self.myCol = self
     
     def cover(self):
         self.separateLeftRight()
-        for()
+        i = self.down
+        while (i != self):
+            j = self.right
+            while (j.position != self.position):
+                j.separateUpDown()
+                j.myCol.weight = j.myCol.weight - 1
+                j = j.right
+            i = i.down
+            
+    def uncover(self):
+        i = self.up
+        while (i != self):
+            j = self.left
+            while (j != self):
+                j.myCol.weight = j.myCol.weight + 1
+                j.connectUpDown
+                j = j.left
+            i = i.up
+        self.connectLeftRight
     
+def solverFunc(header):
+    if header.right == header:
+        return solution
+    else:
+        thisCol = header.right
+        selectedCol = header.right
+        minOnes = float("inf")
+        while thisCol != header:
+            if thisCol.weight < minOnes:
+                minOnes = thisCol.weight
+                selectedCol = thisCol
+            thisCol = thisCol.right
+        
+        selectedCol.cover()
+        
+        row = selectedCol.down
+        while row != selectedCol:
+            print("Row info: " + str(row.right))
+            solution.append(row)
+            coverMe = row.right
+            while coverMe != row:
+                coverMe.myCol.cover()
+                coverMe = coverMe.right
+            solverFunc(header)
+            row = solution.pop()
+            thisCol = row.myCol
+            
+            unCoverMe = row.left
+            while unCoverMe != row:
+                unCoverMe.myCol.uncover()
+                unCoverMe = unCoverMe.left
+            
+        selectedCol.uncover()
+            
+            
     
 
 def listGrid(puzzle, ourMat):
     dimension = len(puzzle[0])
-    rows = len(ourMat[0])
-    cols = len(ourMat)
+    rows = len(ourMat)
+    cols = len(ourMat[0])
+    header = columnLink("header")
+    print("Headeer is here. It is: " + str(header.weight))
+    allCols = []
     
-def colNode()
+    for i in range(cols):
+        newCol = columnLink(str(i))
+        allCols.append(newCol)
+        header = header.hookRight(newCol)
+    header = header.right.myCol
+    
+    for i in range(rows):
+        previous = None
+        for j in range(cols):
+            if (ourMat[i][j] == 1):
+                thisCol = allCols[j]
+                newLink = dancingLink(thisCol)
+                if previous == None:
+                    previous = newLink
+                thisCol.up.hookDown(newLink)
+                previous = previous.hookRight(newLink)
+                thisCol.weight = thisCol.weight + 1
+    
+    header.weight = cols
+    
+    return header
+        
+
 
 if __name__ == '__main__':
     ny_times_correct = np.array([[2,3,4,9,5,6,7,8,1],
@@ -318,4 +395,5 @@ if __name__ == '__main__':
 
     ourMat = buildMat(dimension, puzzle)
     ourMat = puzzleSpecific(ourMat, puzzle)
-    dancingLinks(puzzle, ourMat)
+    header = listGrid(puzzle, ourMat)
+    populateSolutions = solverFunc(header)
