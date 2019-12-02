@@ -279,28 +279,36 @@ class columnLink(dancingLink):
     def cover(self):
         self.separateLeftRight()
         i = self.down
-        while (i != self):
+        seenOuter = []
+        while (i not in seenOuter):
             j = self.right
-            while (j.position != self.position):
-                print("Self column: " + str(self.position))
-                print("This column: " + str(j.position))
+            seen = []
+            while (j not in seen):
+                #print("Self column: " + str(self.position))
+                #print("This column: " + str(j.position))
                 j.separateUpDown()
                 j.myCol.weight = j.myCol.weight - 1
+                seen.append(j)
                 j = j.right
+            seenOuter.append(i)
             i = i.down
             
     def uncover(self):
         i = self.up
-        while (i != self):
+        seenOuter = []
+        while (i not in seenOuter):
             j = self.left
-            while (j != self):
+            seen = []
+            while (j not in seen):
                 j.myCol.weight = j.myCol.weight + 1
                 j.connectUpDown
+                seen.append(j)
                 j = j.left
+            seenOuter.append(i)
             i = i.up
         self.connectLeftRight
     
-def solverFunc():
+def solverFunc(recurseNum):
     if header.right.position == header.position:
         return solution
     else:
@@ -320,10 +328,15 @@ def solverFunc():
             print("Row info: " + str(row.right))
             solution.append(row)
             coverMe = row.right
-            while coverMe != row:
+            seen = []
+            while coverMe not in seen:
+                print("pre cover")
                 coverMe.myCol.cover()
+                print("post cover")
+                seen.append(coverMe)
                 coverMe = coverMe.right
-            solverFunc()
+            print("recursed again: " + str(recurseNum + 1))
+            solverFunc(recurseNum + 1)
             row = solution.pop()
             thisCol = row.myCol
             
@@ -396,4 +409,4 @@ if __name__ == '__main__':
     ourMat = buildMat(dimension, puzzle)
     ourMat = puzzleSpecific(ourMat, puzzle)
     header = listGrid(puzzle, ourMat)
-    populateSolutions = solverFunc()
+    populateSolutions = solverFunc(0)
