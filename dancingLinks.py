@@ -1,5 +1,6 @@
 import numpy as np
 
+header = None
 solution = []
 
 def buildMat(board_size, puzzle):
@@ -272,7 +273,7 @@ class columnLink(dancingLink):
     def __init__(self, pos):
         super().__init__()
         self.weight = 0
-        self.contents = pos
+        self.position = pos
         self.myCol = self
     
     def cover(self):
@@ -281,6 +282,8 @@ class columnLink(dancingLink):
         while (i != self):
             j = self.right
             while (j.position != self.position):
+                print("Self column: " + str(self.position))
+                print("This column: " + str(j.position))
                 j.separateUpDown()
                 j.myCol.weight = j.myCol.weight - 1
                 j = j.right
@@ -297,8 +300,8 @@ class columnLink(dancingLink):
             i = i.up
         self.connectLeftRight
     
-def solverFunc(header):
-    if header.right == header:
+def solverFunc():
+    if header.right.position == header.position:
         return solution
     else:
         thisCol = header.right
@@ -320,7 +323,7 @@ def solverFunc(header):
             while coverMe != row:
                 coverMe.myCol.cover()
                 coverMe = coverMe.right
-            solverFunc(header)
+            solverFunc()
             row = solution.pop()
             thisCol = row.myCol
             
@@ -330,23 +333,20 @@ def solverFunc(header):
                 unCoverMe = unCoverMe.left
             
         selectedCol.uncover()
-            
-            
     
 
 def listGrid(puzzle, ourMat):
-    dimension = len(puzzle[0])
     rows = len(ourMat)
     cols = len(ourMat[0])
-    header = columnLink("header")
-    print("Headeer is here. It is: " + str(header.weight))
+    thisheader = columnLink("header")
+    print("Headeer is here. It is: " + str(thisheader.weight))
     allCols = []
     
     for i in range(cols):
         newCol = columnLink(str(i))
         allCols.append(newCol)
-        header = header.hookRight(newCol)
-    header = header.right.myCol
+        thisheader = thisheader.hookRight(newCol)
+    thisheader = thisheader.right.myCol
     
     for i in range(rows):
         previous = None
@@ -360,9 +360,9 @@ def listGrid(puzzle, ourMat):
                 previous = previous.hookRight(newLink)
                 thisCol.weight = thisCol.weight + 1
     
-    header.weight = cols
+    thisheader.weight = cols
     
-    return header
+    return thisheader
         
 
 
@@ -396,4 +396,4 @@ if __name__ == '__main__':
     ourMat = buildMat(dimension, puzzle)
     ourMat = puzzleSpecific(ourMat, puzzle)
     header = listGrid(puzzle, ourMat)
-    populateSolutions = solverFunc(header)
+    populateSolutions = solverFunc()
