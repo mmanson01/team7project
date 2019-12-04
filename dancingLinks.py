@@ -1,4 +1,5 @@
 import numpy as np
+import time
 
 header = None
 solution = []
@@ -311,6 +312,8 @@ class columnLink(dancingLink):
         header.weight = header.weight + 1
     
 def solverFunc(level):
+    if header == None:
+        return solution
     if header.right.position == header.position or header.weight <= 0:
         return solution
     else:
@@ -354,7 +357,6 @@ def listGrid(puzzle, ourMat):
     rows = len(ourMat)
     cols = len(ourMat[0])
     thisheader = columnLink("header")
-    print("Headeer is here. It is: " + str(thisheader.weight))
     allCols = []
     
     for i in range(cols):
@@ -379,7 +381,15 @@ def listGrid(puzzle, ourMat):
     
     return thisheader
         
-
+def benchmarker(puzzle):
+    dimension = len(puzzle)
+    ourMat = buildMat(dimension, puzzle)
+    ourMat = puzzleSpecific(ourMat, puzzle)
+    header = listGrid(puzzle, ourMat)
+    start = time.time()
+    populateSolutions = solverFunc(0)
+    end = time.time()
+    return [start, end]
 
 if __name__ == '__main__':
     ny_times_correct = np.array([[2,3,4,9,5,6,7,8,1],
