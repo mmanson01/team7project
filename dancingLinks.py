@@ -292,6 +292,7 @@ class columnLink(dancingLink):
                 j = j.right
             seenOuter.append(i)
             i = i.down
+        header.weight = header.weight - 1
             
     def uncover(self):
         i = self.up
@@ -307,9 +308,10 @@ class columnLink(dancingLink):
             seenOuter.append(i)
             i = i.up
         self.connectLeftRight
+        header.weight = header.weight + 1
     
-def solverFunc(recurseNum):
-    if header.right.position == header.position:
+def solverFunc(level):
+    if header.right.position == header.position or header.weight <= 0:
         return solution
     else:
         thisCol = header.right
@@ -325,18 +327,18 @@ def solverFunc(recurseNum):
         
         row = selectedCol.down
         while row != selectedCol:
-            print("Row info: " + str(row.right))
             solution.append(row)
             coverMe = row.right
             seen = []
             while coverMe not in seen:
-                print("pre cover")
                 coverMe.myCol.cover()
-                print("post cover")
                 seen.append(coverMe)
                 coverMe = coverMe.right
-            print("recursed again: " + str(recurseNum + 1))
-            solverFunc(recurseNum + 1)
+            print("Header weight: " + str(header.weight))
+            print("Recursion level: " + str(level + 1))
+            solverFunc(level + 1)
+            if header.right.position == header.position or header.weight <= 0:
+                break
             row = solution.pop()
             thisCol = row.myCol
             
@@ -404,9 +406,9 @@ if __name__ == '__main__':
                       [0,0,0,2],
                       [4,0,0,0],
                       [0,1,0,3]])
-    dimension = 4
+    dimension = 9
 
-    ourMat = buildMat(dimension, puzzle)
-    ourMat = puzzleSpecific(ourMat, puzzle)
-    header = listGrid(puzzle, ourMat)
+    ourMat = buildMat(dimension, ny_times_puzzle)
+    ourMat = puzzleSpecific(ourMat, ny_times_puzzle)
+    header = listGrid(ny_times_puzzle, ourMat)
     populateSolutions = solverFunc(0)
