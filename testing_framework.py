@@ -1,12 +1,14 @@
+#!/usr/bin/env python
 """
 Test different algorithms' run times.
 """
 import time
 import random
 import numpy as np
+import math
 
 from manual import manually_solve
-from backtracking import solve 
+from backtracking import solve
 from brute_force import brute_force
 from dataCheck import get_puzzles, get_4_puzzles
 from dancingLinks import benchmarker

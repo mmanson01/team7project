@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 # human solution
 # techniques taken from: https://www.kristanix.com/sudokuepic/sudoku-solving-techniques.php
 
@@ -48,7 +49,7 @@ def sole_candidate(puzzle):
 
 def unique_candidate(puzzle):
     """Checks block interactions to assign any unique candidates"""
-    n = len(puzzle)    
+    n = len(puzzle)
     box_size = int(math.sqrt(n))
     for i in range(box_size):
         for j in range(box_size):
@@ -62,7 +63,7 @@ def unique_candidate(puzzle):
                         if (puzzle[row][col] == 0 or type(puzzle[row][col]) is list) and digit not in check_box(puzzle, [row, col]):
                             possible.append([row,col])
                 if len(possible) == 1:
-                    puzzle[possible[0][0]][possible[0][1]] = digit                 
+                    puzzle[possible[0][0]][possible[0][1]] = digit
     return puzzle
 
 def final_sweep(puzzle):
@@ -93,7 +94,7 @@ def naked_subset(puzzle):
                             if digit in puzzle[row][elem]:
                                 puzzle[row][elem].remove(digit)
                 # find naked subsets and delete its integers from rest of column
-                col_poss = [i for i in range(len(puzzle)) if type(puzzle[i][col]) is not int and set(puzzle[i][col]) == set(puzzle[row][col])]           
+                col_poss = [i for i in range(len(puzzle)) if type(puzzle[i][col]) is not int and set(puzzle[i][col]) == set(puzzle[row][col])]
                 if len(col_poss) == len(puzzle[row][col]):
                     delete = [j for j in range(len(puzzle)) if j not in col_poss and type(puzzle[j][col]) is not int]
                     for elem in delete:
@@ -149,7 +150,7 @@ def manually_solve(puzzle):
     puzzle = puzzle.tolist()
     while added_on:
         orig_puzzle = np.copy(np_puzzle(puzzle))
-        puzzle = sole_candidate(puzzle) 
+        puzzle = sole_candidate(puzzle)
         puzzle = unique_candidate(puzzle)
         puzzle = naked_subset(puzzle)
         puzzle = naked_singles(puzzle)
@@ -157,16 +158,16 @@ def manually_solve(puzzle):
         if np.array_equal(orig_puzzle, np_puzzle(puzzle)):
             added_on = False
         count += 1
-        
+
     #applies backtracking algorithm to unsolved puzzles
     unsolved = np_puzzle(puzzle)
     if (not (check_completion(unsolved) == 0)):
         solve(unsolved, len(puzzle))
         return unsolved
-        
+
     #returns solved puzzle
     return np_puzzle(puzzle)
-   
+
 def check_completion(puzzle):
     zeroes = 0
     for row in puzzle:
